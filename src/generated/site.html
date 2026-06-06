@@ -1340,24 +1340,296 @@
   <span>SESI Benjamin Guimarães · Contagem, MG</span>
 </footer>
 
-<script>
-  // Smooth active nav highlight
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Scroll progress bar ---------- */
+  const progress = document.getElementById('scroll-progress');
+  function updateProgress() {
+    const h = document.documentElement;
+    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+    progress.style.width = pct + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  /* ---------- Custom cursor (desktop) ---------- */
+  const cursor = document.getElementById('custom-cursor');
+  if (window.matchMedia('(hover: hover)').matches) {
+    let cx = 0, cy = 0, tx = 0, ty = 0;
+    window.addEventListener('mousemove', e => { tx = e.clientX; ty = e.clientY; });
+    function tick() {
+      cx += (tx - cx) * 0.25; cy += (ty - cy) * 0.25;
+      cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+      requestAnimationFrame(tick);
+    }
+    tick();
+    document.querySelectorAll('a, button, .team-card, .data-card, .stem-card, input, textarea, select').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('cursor-hover'));
+    });
+  } else {
+    cursor.style.display = 'none';
+  }
+
+  /* ---------- Smooth active nav highlight ---------- */
   const sections = document.querySelectorAll('section[id], div[id]');
   const navLinks = document.querySelectorAll('.nav-links a');
-
   window.addEventListener('scroll', () => {
     let current = '';
-    sections.forEach(s => {
-      if (window.scrollY >= s.offsetTop - 100) current = s.id;
-    });
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
     navLinks.forEach(a => {
-      a.style.color = a.getAttribute('href') === '#' + current
-        ? 'white'
-        : 'rgba(255,255,255,0.75)';
+      a.style.color = a.getAttribute('href') === '#' + current ? 'white' : 'rgba(255,255,255,0.75)';
     });
   });
 
-  function handleSubmit(e) {
+  /* ---------- Intersection Observer reveals ---------- */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const delay = parseInt(e.target.dataset.stagger || '0', 10);
+        setTimeout(() => e.target.classList.add('is-visible'), delay);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.on-scroll, .slide-left').forEach(el => io.observe(el));
+
+  /* Hero text reveal on load */
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.reveal-line').forEach(el => el.classList.add('is-revealed'));
+  });
+
+  /* ---------- Counter-up for stat-num and data-number ---------- */
+  function animateCounter(el) {
+    const raw = el.textContent.trim();
+    const m = raw.match(/^([+\-]?)([\d.,]+)(.*)$/);
+    if (!m) return;
+    const prefix = m[1], suffix = m[3];
+    const numStr = m[2];
+    const target = parseFloat(numStr.replace(/\./g,'').replace(',', '.'));
+    if (isNaN(target)) return;
+    const hasComma = numStr.includes(',');
+    const duration = 1400; const start = performance.now();
+    function frame(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const val = target * eased;
+      let out = hasComma ? val.toFixed(1).replace('.', ',') : Math.round(val).toString();
+      el.textContent = prefix + out + suffix;
+      if (t < 1) requestAnimationFrame(frame);
+      else el.textContent = prefix + numStr + suffix;
+    }
+    el.textContent = prefix + '0' + suffix;
+    requestAnimationFrame(frame);
+  }
+  const counterIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { animateCounter(e.target); counterIO.unobserve(e.target); }
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.stat-num, .data-number').forEach(el => {
+    if (/\d/.test(el.textContent)) counterIO.observe(el);
+  });
+
+  /* ---------- 3D tilt for data cards ---------- */
+  document.querySelectorAll('[data-tilt]').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform = `perspective(900px) rotateX(${-y * 8}deg) rotateY(${x * 10}deg) translateY(-4px)`;
+    });
+    card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+  });
+
+  /* ---------- Parallax background for #social ---------- */
+  const parallax = document.getElementById('social-parallax');
+  if (parallax) {
+    window.addEventListener('scroll', () => {
+      const r = parallax.parentElement.getBoundingClientRect();
+      const offset = r.top * 0.25;
+      parallax.style.transform = `translateY(${offset}px)`;
+    }, { passive: true });
+  }
+
+  /* ---------- Ripple ---------- */
+  document.querySelectorAll('.btn-primary, .form-submit, .app-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      const r = this.getBoundingClientRect();
+      const ripple = document.createElement('span');
+      const size = Math.max(r.width, r.height);
+      ripple.className = 'ripple-effect';
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = (e.clientX - r.left - size/2) + 'px';
+      ripple.style.top = (e.clientY - r.top - size/2) + 'px';
+      this.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 650);
+    });
+  });
+
+  /* ---------- Three.js hero scene ---------- */
+  if (!prefersReduced) {
+    try {
+      const THREE = await import('three');
+      const { STLLoader } = await import('three/addons/loaders/STLLoader.js');
+
+      const canvas = document.getElementById('hero-canvas');
+      const hero = document.getElementById('inicio');
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 2000);
+      camera.position.set(0, 0, 60);
+
+      function resize() {
+        const w = hero.clientWidth, h = hero.clientHeight;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      /* Particles */
+      const PCOUNT = 140;
+      const positions = new Float32Array(PCOUNT * 3);
+      for (let i = 0; i < PCOUNT; i++) {
+        positions[i*3]   = (Math.random() - 0.5) * 120;
+        positions[i*3+1] = (Math.random() - 0.5) * 70;
+        positions[i*3+2] = (Math.random() - 0.5) * 60;
+      }
+      const pGeo = new THREE.BufferGeometry();
+      pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const pMat = new THREE.PointsMaterial({
+        color: 0x2a4fd4, size: 0.7, transparent: true, opacity: 0.85,
+        depthWrite: false, blending: THREE.AdditiveBlending
+      });
+      const points = new THREE.Points(pGeo, pMat);
+      scene.add(points);
+
+      /* Connecting lines */
+      const lineGeo = new THREE.BufferGeometry();
+      const maxLines = PCOUNT * 6;
+      const linePos = new Float32Array(maxLines * 3);
+      lineGeo.setAttribute('position', new THREE.BufferAttribute(linePos, 3));
+      const lineMat = new THREE.LineBasicMaterial({
+        color: 0x2a4fd4, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending
+      });
+      const lines = new THREE.LineSegments(lineGeo, lineMat);
+      scene.add(lines);
+
+      /* Lights */
+      scene.add(new THREE.AmbientLight(0x4060ff, 0.5));
+      const key = new THREE.DirectionalLight(0x88aaff, 1.2); key.position.set(5, 10, 8); scene.add(key);
+      const rim = new THREE.DirectionalLight(0xffffff, 0.6); rim.position.set(-8, -4, -5); scene.add(rim);
+
+      /* Car / torus fallback */
+      let carMesh = null;
+      const placeholderGeo = new THREE.TorusGeometry(18, 0.6, 16, 120);
+      const placeholderMat = new THREE.MeshStandardMaterial({
+        color: 0x011039, emissive: 0x0a1f6e, metalness: 0.8, roughness: 0.25
+      });
+      const placeholder = new THREE.Mesh(placeholderGeo, placeholderMat);
+      placeholder.rotation.x = Math.PI / 2.4;
+      placeholder.position.set(0, -8, -10);
+      scene.add(placeholder);
+
+      const loader = new STLLoader();
+      loader.load('/__l5e/assets-v1/dc75f591-35cc-46e2-84be-62f24e937d44/formula-car.stl', (geom) => {
+        geom.center();
+        geom.computeBoundingSphere();
+        const radius = geom.boundingSphere.radius;
+        const scale = 22 / radius;
+        const mat = new THREE.MeshStandardMaterial({
+          color: 0x011039, emissive: 0x0a1f6e, emissiveIntensity: 0.25,
+          metalness: 0.85, roughness: 0.3,
+        });
+        carMesh = new THREE.Mesh(geom, mat);
+        carMesh.scale.setScalar(scale);
+        carMesh.position.set(0, -6, -8);
+
+        /* White accent overlay (wireframe edges) */
+        const edges = new THREE.EdgesGeometry(geom, 25);
+        const edgeMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35 });
+        const wire = new THREE.LineSegments(edges, edgeMat);
+        wire.scale.setScalar(scale);
+        wire.position.copy(carMesh.position);
+        carMesh.userData.wire = wire;
+
+        scene.remove(placeholder);
+        scene.add(carMesh);
+        scene.add(wire);
+      }, undefined, () => { /* keep placeholder on error */ });
+
+      /* Mouse parallax */
+      const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+      hero.addEventListener('mousemove', e => {
+        const r = hero.getBoundingClientRect();
+        mouse.tx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+        mouse.ty = ((e.clientY - r.top) / r.height - 0.5) * 2;
+      });
+
+      const CONN_DIST = 14;
+      function animate() {
+        requestAnimationFrame(animate);
+        mouse.x += (mouse.tx - mouse.x) * 0.05;
+        mouse.y += (mouse.ty - mouse.y) * 0.05;
+
+        points.rotation.y += 0.0008;
+        points.rotation.x = mouse.y * 0.15;
+        points.position.x = mouse.x * 3;
+
+        /* update connecting lines */
+        const pos = pGeo.attributes.position.array;
+        let li = 0;
+        for (let i = 0; i < PCOUNT && li < maxLines * 3 - 6; i++) {
+          for (let j = i + 1; j < PCOUNT && li < maxLines * 3 - 6; j++) {
+            const dx = pos[i*3] - pos[j*3];
+            const dy = pos[i*3+1] - pos[j*3+1];
+            const dz = pos[i*3+2] - pos[j*3+2];
+            const d2 = dx*dx + dy*dy + dz*dz;
+            if (d2 < CONN_DIST * CONN_DIST) {
+              linePos[li++] = pos[i*3];   linePos[li++] = pos[i*3+1]; linePos[li++] = pos[i*3+2];
+              linePos[li++] = pos[j*3];   linePos[li++] = pos[j*3+1]; linePos[li++] = pos[j*3+2];
+            }
+          }
+        }
+        for (; li < maxLines * 3; li++) linePos[li] = 0;
+        lineGeo.attributes.position.needsUpdate = true;
+        lineGeo.setDrawRange(0, li / 3);
+
+        placeholder.rotation.z += 0.003;
+        if (carMesh) {
+          carMesh.rotation.y += 0.004;
+          carMesh.rotation.x = -0.3 + mouse.y * 0.1;
+          if (carMesh.userData.wire) {
+            carMesh.userData.wire.rotation.copy(carMesh.rotation);
+          }
+        }
+
+        camera.position.x = mouse.x * 4;
+        camera.position.y = -mouse.y * 3;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
+      }
+      animate();
+    } catch (err) {
+      console.warn('Three.js scene failed to init:', err);
+    }
+  }
+
+  /* ---------- Form submit (mailto) ---------- */
+  window.handleSubmit = function(e) {
     e.preventDefault();
     const form = e.target;
     const nome = form.querySelector('input[type="text"]').value.trim();
@@ -1370,11 +1642,8 @@
     const btn = form.querySelector('.form-submit');
     btn.textContent = 'Abrindo seu e-mail...';
     btn.style.opacity = '0.6';
-    setTimeout(() => {
-      btn.textContent = 'Enviar mensagem';
-      btn.style.opacity = '1';
-    }, 3000);
-  }
+    setTimeout(() => { btn.textContent = 'Enviar mensagem'; btn.style.opacity = '1'; }, 3000);
+  };
 </script>
 </body>
 </html>
