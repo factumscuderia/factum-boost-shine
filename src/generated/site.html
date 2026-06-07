@@ -1704,21 +1704,48 @@
     }
   }
 
-  /* ---------- Form submit (mailto) ---------- */
-  window.handleSubmit = function(e) {
+  /* ---------- Form submit (EmailJS) ----------
+     IMPORTANTE: Após criar sua conta gratuita em https://emailjs.com,
+     configure um serviço Gmail (apontando para factumscuderia2023@gmail.com)
+     e um template com as variáveis {{from_name}}, {{from_email}} e {{message}}.
+     Em seguida, substitua os três valores abaixo pelas credenciais reais. */
+  const EMAILJS_SERVICE_ID  = 'SEU_SERVICE_ID';
+  const EMAILJS_TEMPLATE_ID = 'SEU_TEMPLATE_ID';
+  const EMAILJS_PUBLIC_KEY  = 'SUA_PUBLIC_KEY';
+
+  window.handleSubmit = async function(e) {
     e.preventDefault();
     const form = e.target;
-    const nome = form.querySelector('input[type="text"]').value.trim();
-    const email = form.querySelector('input[type="email"]').value.trim();
-    const assunto = form.querySelector('select').value || 'Contato pelo site';
-    const mensagem = form.querySelector('textarea').value.trim();
-    const corpo = `Nome: ${nome}%0D%0AE-mail: ${email}%0D%0A%0D%0A${mensagem}`;
-    const mailto = `mailto:factumscuderia2023@gmail.com?subject=${encodeURIComponent('[Site] ' + assunto)}&body=${corpo}`;
-    window.location.href = mailto;
     const btn = form.querySelector('.form-submit');
-    btn.textContent = 'Abrindo seu e-mail...';
-    btn.style.opacity = '0.6';
-    setTimeout(() => { btn.textContent = 'Enviar mensagem'; btn.style.opacity = '1'; }, 3000);
+    btn.textContent = 'Enviando...';
+    btn.disabled = true;
+
+    const formData = {
+      from_name:  form.querySelector('[name="nome"]').value,
+      from_email: form.querySelector('[name="email"]').value,
+      message:    form.querySelector('[name="mensagem"]').value,
+    };
+
+    try {
+      if (!window.emailjs) throw new Error('EmailJS SDK não carregou');
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, formData, EMAILJS_PUBLIC_KEY);
+      btn.textContent = '✓ Mensagem enviada!';
+      btn.style.background = '#1a9e4a';
+      btn.style.color = '#fff';
+      form.reset();
+    } catch (err) {
+      console.error('EmailJS error:', err);
+      btn.textContent = '✗ Erro ao enviar. Tente novamente.';
+      btn.style.background = '#c0392b';
+      btn.style.color = '#fff';
+    } finally {
+      setTimeout(() => {
+        btn.textContent = 'Enviar mensagem';
+        btn.style.background = '';
+        btn.style.color = '';
+        btn.disabled = false;
+      }, 4000);
+    }
   };
 </script>
 </body>
