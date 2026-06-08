@@ -1731,15 +1731,7 @@
     }
   }
 
-  /* ---------- Form submit (EmailJS) ----------
-     IMPORTANTE: Após criar sua conta gratuita em https://emailjs.com,
-     configure um serviço Gmail (apontando para factumscuderia2023@gmail.com)
-     e um template com as variáveis {{from_name}}, {{from_email}} e {{message}}.
-     Em seguida, substitua os três valores abaixo pelas credenciais reais. */
-  const EMAILJS_SERVICE_ID  = 'SEU_SERVICE_ID';
-  const EMAILJS_TEMPLATE_ID = 'SEU_TEMPLATE_ID';
-  const EMAILJS_PUBLIC_KEY  = 'SUA_PUBLIC_KEY';
-
+  /* ---------- Form submit (Resend via /api/public/contact) ---------- */
   window.handleSubmit = async function(e) {
     e.preventDefault();
     const form = e.target;
@@ -1747,21 +1739,26 @@
     btn.textContent = 'Enviando...';
     btn.disabled = true;
 
-    const formData = {
-      from_name:  form.querySelector('[name="nome"]').value,
-      from_email: form.querySelector('[name="email"]').value,
-      message:    form.querySelector('[name="mensagem"]').value,
+    const payload = {
+      nome:     form.querySelector('[name="nome"]').value,
+      email:    form.querySelector('[name="email"]').value,
+      assunto:  form.querySelector('[name="assunto"]').value,
+      mensagem: form.querySelector('[name="mensagem"]').value,
     };
 
     try {
-      if (!window.emailjs) throw new Error('EmailJS SDK não carregou');
-      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, formData, EMAILJS_PUBLIC_KEY);
+      const r = await fetch('/api/public/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
       btn.textContent = '✓ Mensagem enviada!';
       btn.style.background = '#1a9e4a';
       btn.style.color = '#fff';
       form.reset();
     } catch (err) {
-      console.error('EmailJS error:', err);
+      console.error('Contact form error:', err);
       btn.textContent = '✗ Erro ao enviar. Tente novamente.';
       btn.style.background = '#c0392b';
       btn.style.color = '#fff';
