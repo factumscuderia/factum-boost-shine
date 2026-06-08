@@ -669,18 +669,21 @@
   .app-btn:hover { opacity: 0.85; }
 
   .app-btn-hero {
-    background: linear-gradient(135deg, var(--accent, #ff2e63), #ff6b9d);
+    background: linear-gradient(135deg, var(--navy, #011039), #1e3a8a);
     color: #fff;
     padding: 18px 44px;
     font-size: 1.15rem;
     letter-spacing: 0.12em;
     border-radius: 10px;
-    box-shadow: 0 12px 32px rgba(255, 46, 99, 0.35);
-    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, opacity 0.2s;
+    border: 2px solid #fff;
+    box-shadow: 0 12px 32px rgba(1, 16, 57, 0.35);
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, background 0.3s ease-out, opacity 0.2s;
   }
   .app-btn-hero:hover {
     transform: translateY(-2px);
-    box-shadow: 0 16px 40px rgba(255, 46, 99, 0.5);
+    background: #fff;
+    color: var(--navy, #011039);
+    box-shadow: 0 16px 40px rgba(1, 16, 57, 0.5);
     opacity: 1;
   }
 
