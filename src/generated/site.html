@@ -668,6 +668,22 @@
 
   .app-btn:hover { opacity: 0.85; }
 
+  .app-btn-hero {
+    background: linear-gradient(135deg, var(--accent, #ff2e63), #ff6b9d);
+    color: #fff;
+    padding: 18px 44px;
+    font-size: 1.15rem;
+    letter-spacing: 0.12em;
+    border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(255, 46, 99, 0.35);
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out, opacity 0.2s;
+  }
+  .app-btn-hero:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(255, 46, 99, 0.5);
+    opacity: 1;
+  }
+
   .ios-steps {
     list-style: none;
     margin-top: 16px;
@@ -1350,9 +1366,14 @@
       <div class="app-download-row">
         <div class="app-download-card">
           <div class="app-download-label">Android</div>
-          <div class="app-download-title">Disponível na Play Store</div>
-          <p class="app-download-text">Faça o download direto pela Google Play Store no seu dispositivo Android.</p>
-          <a href="#" class="app-btn">Acessar na Play Store</a>
+          <div class="app-download-title">Versão Web — Adicione à Tela de Início</div>
+          <p class="app-download-text">Acesse pelo Chrome e adicione como app para uma experiência completa:</p>
+          <ol class="ios-steps">
+            <li data-n="1">Abra o link do aplicativo no Chrome</li>
+            <li data-n="2">Toque no ícone de Menu (três pontinhos)</li>
+            <li data-n="3">Escolha "Adicionar à tela inicial"</li>
+            <li data-n="4">Toque em Adicionar — pronto</li>
+          </ol>
         </div>
         <div class="app-download-card">
           <div class="app-download-label">iPhone · iOS</div>
@@ -1365,6 +1386,9 @@
             <li data-n="4">Toque em Adicionar — pronto</li>
           </ol>
         </div>
+      </div>
+      <div style="display:flex;justify-content:center;margin-top:2.5rem;">
+        <a href="https://savvy-steps-spark.lovable.app/" target="_blank" rel="noopener" class="app-btn app-btn-hero">Acesse FinEdu</a>
       </div>
     </div>
   </div>
