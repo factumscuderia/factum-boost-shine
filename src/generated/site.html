@@ -1596,12 +1596,12 @@ async function init() {
 
   function focus(p) {
     dismissHint(); controls.autoRotate = false; selected = p;
-    parts.forEach(q => { q.btn.classList.toggle('active', q === p); allMats(q).forEach(m => { m.transparent = q !== p; m.opacity = q === p ? 1 : 0.15; m.depthWrite = q === p; }); });
+    parts.forEach(q => { q.btn.classList.toggle('active', q === p); allMats(q).forEach(m => { m.transparent = q !== p; m.opacity = q === p ? 1 : 0.15; m.depthWrite = q === p; m.needsUpdate = true; }); });
     const b = new THREE.Box3(); p.objs.forEach(o => b.expandByObject(o));
     const c = b.getCenter(new THREE.Vector3()), r = b.getSize(new THREE.Vector3()).length();
     let pos;
     if (p.posicaoCamera) pos = new THREE.Vector3(...p.posicaoCamera);
-    else { const dir = camera.position.clone().sub(controls.target).normalize(); pos = c.clone().add(dir.multiplyScalar(Math.max(r * 1.6, 35))); }
+    else { const dir = camera.position.clone().sub(controls.target).normalize(); pos = c.clone().add(dir.multiplyScalar(Math.max(r * 2.4, 45))); }
     animateCam(pos, c);
     document.getElementById('carroNome').textContent = p.nome;
     document.getElementById('carroMat').textContent = p.material;
@@ -1611,7 +1611,7 @@ async function init() {
   }
   function back() {
     selected = null; panel.classList.remove('open');
-    parts.forEach(q => { q.btn.classList.remove('active'); allMats(q).forEach(m => { m.transparent = false; m.opacity = 1; m.depthWrite = true; }); });
+    parts.forEach(q => { q.btn.classList.remove('active'); allMats(q).forEach(m => { m.transparent = false; m.opacity = 1; m.depthWrite = true; m.needsUpdate = true; }); });
     animateCam(home.pos.clone(), home.target.clone());
     setTimeout(() => { if (!selected && !reduce) controls.autoRotate = true; }, 1300);
   }
