@@ -45,8 +45,6 @@ function useCarModel(carro: Carro) {
     wrap.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(wrap);
     const size = box.getSize(new THREE.Vector3());
-    // frente do carro para o eixo mais longo no plano horizontal
-    if (size.z > size.x) root.rotation.y += 0; // mantido
     const s = CAR_LEN / Math.max(size.x, size.z);
     wrap.scale.setScalar(s);
     wrap.updateMatrixWorld(true);
@@ -166,23 +164,23 @@ function LogoWall() {
       </mesh>
       {/* painel pit-wall */}
       <mesh position={[0, 2.6, 0]}>
-        <boxGeometry args={[9, 3.4, 0.08]} />
+        <boxGeometry args={[9, 3.8, 0.08]} />
         <meshStandardMaterial color="#011039" roughness={0.4} metalness={0.5} />
       </mesh>
       <mesh position={[0, 2.6, 0.05]}>
-        <planeGeometry args={[4.4, 4.4 * (1457 / 1939)]} />
+        <planeGeometry args={[4.6, 4.6]} />
         <meshBasicMaterial map={tex} transparent toneMapped={false} />
       </mesh>
       {/* faixas de luz */}
       {[-1, 1].map((s) => (
-        <mesh key={s} position={[0, 2.6 + s * 1.78, 0.06]}>
+        <mesh key={s} position={[0, 2.6 + s * 1.92, 0.06]}>
           <boxGeometry args={[9, 0.04, 0.02]} />
           <meshBasicMaterial color="#4d74ff" toneMapped={false} />
         </mesh>
       ))}
       {[-7.5, 7.5].map((x) => (
         <mesh key={x} position={[x, 2.6, 0.02]}>
-          <boxGeometry args={[0.05, 3.4, 0.02]} />
+          <boxGeometry args={[0.05, 3.8, 0.02]} />
           <meshBasicMaterial color="#8fa8ff" toneMapped={false} />
         </mesh>
       ))}
