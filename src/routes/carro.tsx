@@ -2,24 +2,26 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Suspense, useCallback, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useProgress } from "@react-three/drei";
-import { CARROS, type Peca } from "@/components/carro/cars";
+import { CARRO_FB06, type Peca } from "@/components/carro/cars";
 import { GarageScene } from "@/components/carro/Garage";
+import { TrackScene } from "@/components/carro/TrackScene";
+import { ReactionTest } from "@/components/carro/ReactionTest";
 import "@/components/carro/carro.css";
 
 export const Route = createFileRoute("/carro")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "O Carro — Garagem 3D | Factum Scuderia" },
-      { name: "description", content: "Explore os carros da Factum Scuderia em uma garagem 3D: gire, aproxime e descubra a função física de cada peça." },
-      { property: "og:title", content: "O Carro — Garagem 3D | Factum Scuderia" },
-      { property: "og:description", content: "Explore peça por peça os carros de STEM Racing da Factum Scuderia em 3D." },
+      { title: "FB-06 — Factum Scuderia | 3D & Teste de Reação" },
+      { name: "description", content: "Explore o FB-06 da Factum Scuderia em 3D, conheça os componentes de engenharia e teste seus reflexos no circuito de arrancada F1." },
+      { property: "og:title", content: "FB-06 — Factum Scuderia | 3D & Teste de Reação" },
+      { property: "og:description", content: "Visualizador 3D do FB-06 da Factum Scuderia com teste interativo de reação na pista estilo F1." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&display=swap" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" },
     ],
   }),
   component: CarroPage,
@@ -30,14 +32,17 @@ function Loading() {
   return (
     <div className="cg-loading">
       <div className="cg-loading-bar"><span style={{ width: `${progress}%` }} /></div>
-      <div>Abrindo a garagem… {Math.round(progress)}%</div>
+      <div>Preparando o FB-06… {Math.round(progress)}%</div>
     </div>
   );
 }
 
 function CarroPage() {
-  const [carId, setCarId] = useState(CARROS[0].id);
-  const carro = CARROS.find((c) => c.id === carId)!;
+  const carro = CARRO_FB06;
+  const [modo, setModo] = useState<"garagem" | "pista">("garagem");
+  const [trackCarState, setTrackCarState] = useState<"ready" | "launched" | "false_start">("ready");
+  const [trackLaunchTimestamp, setTrackLaunchTimestamp] = useState<number>(0);
+
   const [sel, setSel] = useState<Peca | null>(null);
   const [tip, setTip] = useState<{ p: Peca; x: number; y: number } | null>(null);
   const [ready, setReady] = useState(false);
@@ -46,6 +51,19 @@ function CarroPage() {
   const onHover = useCallback((p: Peca | null, x: number, y: number) => setTip(p ? { p, x, y } : null), []);
   const onReady = useCallback(() => setReady(true), []);
   const select = (p: Peca | null) => { setSel(p); setHint(false); };
+
+  const handleLaunch = useCallback((ms: number) => {
+    setTrackCarState("launched");
+    setTrackLaunchTimestamp(performance.now());
+  }, []);
+
+  const handleFalseStart = useCallback(() => {
+    setTrackCarState("false_start");
+  }, []);
+
+  const handleResetCar = useCallback(() => {
+    setTrackCarState("ready");
+  }, []);
 
   const scrollToAbout = () => {
     document.getElementById("sobre-fb06")?.scrollIntoView({ behavior: "smooth" });
@@ -57,68 +75,111 @@ function CarroPage() {
 
   return (
     <div className="cg-root" id="visualizador">
-      <header className="cg-header">
+      <header className={`cg-header ${modo === "pista" ? "mode-track" : ""}`}>
         <a href="/" className="cg-back-site">← Factum Scuderia</a>
+        
         <div className="cg-title">
-          <span className="cg-tag">Garagem 3D</span>
-          <h1>O Carro</h1>
+          <h1>FB-06</h1>
         </div>
-        <div className="cg-tabs" role="tablist" aria-label="Escolher carro">
-          {CARROS.map((c) => (
+
+        <div className="cg-header-actions">
+          {modo === "garagem" ? (
             <button
-              key={c.id}
-              role="tab"
-              aria-selected={c.id === carId}
-              className={c.id === carId ? "active" : ""}
-              onClick={() => { if (c.id !== carId) { setCarId(c.id); setSel(null); setReady(false); } }}
+              className="cg-cta-track-btn"
+              onClick={() => { setModo("pista"); setSel(null); }}
+              aria-label="Ver o FB-06 na pista e testar tempo de reação"
             >
-              <strong>{c.nome}</strong>
-              <small>{c.subtitulo}</small>
+              <span className="cg-cta-track-pulse" />
+              <span className="cg-cta-track-text">
+                <strong>⚡ VEJA-O NA PISTA</strong>
+                <small>Teste de Reação F1</small>
+              </span>
             </button>
-          ))}
+          ) : (
+            <button
+              className="cg-btn-switch-garage"
+              onClick={() => setModo("garagem")}
+              aria-label="Voltar para a garagem 3D"
+            >
+              🛠️ Explorar Peças 3D
+            </button>
+          )}
         </div>
       </header>
 
-      <div className="cg-stage">
-        <Canvas shadows dpr={[1, 2]} camera={{ position: [5.2, 2.4, 5.6], fov: 38 }} onPointerMissed={() => sel && select(null)}>
+      <div className={`cg-stage ${modo === "pista" ? "mode-track" : "mode-garage"}`}>
+        <Canvas
+          shadows
+          dpr={[1, 2]}
+          camera={modo === "garagem" ? { position: [5.2, 2.4, 5.6], fov: 38 } : { position: [-2.8, 1.45, -2.5], fov: 38 }}
+          onPointerMissed={() => sel && select(null)}
+        >
           <Suspense fallback={null}>
-            <GarageScene key={carro.id} carro={carro} selecionada={sel} onSelect={select} onHover={onHover} onReady={onReady} />
+            {modo === "garagem" ? (
+              <GarageScene key="garage-fb06" carro={carro} selecionada={sel} onSelect={select} onHover={onHover} onReady={onReady} />
+            ) : (
+              <TrackScene key="track-fb06" carState={trackCarState} launchTimestamp={trackLaunchTimestamp} />
+            )}
           </Suspense>
         </Canvas>
-        {!ready && <Loading />}
 
-        {tip && !sel && (
-          <div className="cg-tip" style={{ left: tip.x + 14, top: tip.y - 10 }}>{tip.p.nome}</div>
-        )}
-        <div className={`cg-hint ${hint && ready ? "" : "hide"}`}>Arraste para girar · toque numa peça para explorar</div>
+        {!ready && modo === "garagem" && <Loading />}
 
-        <button className="cg-scroll-indicator" onClick={scrollToAbout} aria-label="Rolar para a seção sobre o FB06">
-          <span>Sobre o FB06 · Engenharia</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
-        </button>
+        {modo === "garagem" ? (
+          <>
+            {tip && !sel && (
+              <div className="cg-tip" style={{ left: tip.x + 14, top: tip.y - 10 }}>{tip.p.nome}</div>
+            )}
+            <div className={`cg-hint ${hint && ready ? "" : "hide"}`}>Arraste para girar · toque numa peça para explorar</div>
 
-        <aside className={`cg-panel ${sel ? "open" : ""}`} aria-live="polite">
-          {sel && (
-            <>
-              <button className="cg-close" onClick={() => select(null)}>← Voltar à vista geral</button>
-              <span className="cg-tag">{carro.nome} · Componente</span>
-              <h2>{sel.nome}</h2>
-              <div className="cg-mat"><span style={{ background: sel.cor }} />{sel.material}</div>
-              <div className="cg-lbl">Função física</div>
-              <p>{sel.funcao}</p>
-            </>
-          )}
-        </aside>
+            {/* Chamada flutuante para a pista */}
+            <div className="cg-stage-track-cta-container">
+              <button
+                className="cg-stage-track-cta"
+                onClick={() => { setModo("pista"); setSel(null); }}
+              >
+                <span className="cg-sparkle">⚡</span>
+                <span>Ver o FB-06 na Pista · Teste de Reação</span>
+                <span className="cg-arrow">→</span>
+              </button>
+            </div>
 
-        <nav className="cg-parts" aria-label="Peças do carro">
-          {carro.pecas.map((p) => (
-            <button key={p.id} className={sel?.id === p.id ? "active" : ""} onClick={() => select(sel?.id === p.id ? null : p)}>
-              {p.nome}
+            <button className="cg-scroll-indicator" onClick={scrollToAbout} aria-label="Rolar para a seção sobre o FB06">
+              <span>Sobre o FB06 · Engenharia</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
             </button>
-          ))}
-        </nav>
+
+            <aside className={`cg-panel ${sel ? "open" : ""}`} aria-live="polite">
+              {sel && (
+                <>
+                  <button className="cg-close" onClick={() => select(null)}>← Voltar à vista geral</button>
+                  <span className="cg-tag">{carro.nome} · Componente</span>
+                  <h2>{sel.nome}</h2>
+                  <div className="cg-mat"><span style={{ background: sel.cor }} />{sel.material}</div>
+                  <div className="cg-lbl">Função física</div>
+                  <p>{sel.funcao}</p>
+                </>
+              )}
+            </aside>
+
+            <nav className="cg-parts" aria-label="Peças do carro">
+              {carro.pecas.map((p) => (
+                <button key={p.id} className={sel?.id === p.id ? "active" : ""} onClick={() => select(sel?.id === p.id ? null : p)}>
+                  {p.nome}
+                </button>
+              ))}
+            </nav>
+          </>
+        ) : (
+          <ReactionTest
+            onLaunch={handleLaunch}
+            onFalseStart={handleFalseStart}
+            onResetCar={handleResetCar}
+            onBackToGarage={() => setModo("garagem")}
+          />
+        )}
       </div>
 
       {/* Seção Sobre o FB06 abaixo do visualizador */}
@@ -227,7 +288,7 @@ function CarroPage() {
 
           <div className="cg-about-footer">
             <button onClick={scrollToTop} className="cg-btn-back-top">
-              ↑ Retornar ao Visualizador 3D
+              ↑ Retornar ao Topo
             </button>
           </div>
         </div>
