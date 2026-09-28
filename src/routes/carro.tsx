@@ -47,8 +47,16 @@ function CarroPage() {
   const onReady = useCallback(() => setReady(true), []);
   const select = (p: Peca | null) => { setSel(p); setHint(false); };
 
+  const scrollToAbout = () => {
+    document.getElementById("sobre-fb06")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
-    <div className="cg-root">
+    <div className="cg-root" id="visualizador">
       <header className="cg-header">
         <a href="/" className="cg-back-site">← Factum Scuderia</a>
         <div className="cg-title">
@@ -84,6 +92,13 @@ function CarroPage() {
         )}
         <div className={`cg-hint ${hint && ready ? "" : "hide"}`}>Arraste para girar · toque numa peça para explorar</div>
 
+        <button className="cg-scroll-indicator" onClick={scrollToAbout} aria-label="Rolar para a seção sobre o FB06">
+          <span>Sobre o FB06 · Engenharia</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
         <aside className={`cg-panel ${sel ? "open" : ""}`} aria-live="polite">
           {sel && (
             <>
@@ -105,6 +120,118 @@ function CarroPage() {
           ))}
         </nav>
       </div>
+
+      {/* Seção Sobre o FB06 abaixo do visualizador */}
+      <section className="cg-about" id="sobre-fb06" aria-labelledby="sobre-fb06-titulo">
+        <div className="cg-about-inner">
+          <div className="cg-about-header">
+            <span className="cg-about-badge">Engineering Portfolio 2024 · Factum Scuderia</span>
+            <h2 id="sobre-fb06-titulo" className="cg-about-title">Sobre o FB06</h2>
+            <div className="cg-about-line" />
+          </div>
+
+          <div className="cg-about-lead-card">
+            <div className="cg-about-lead-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+            </div>
+            <p className="cg-about-lead">
+              O FB06 foi desenvolvido pela equipe de engenharia da Factum Scuderia com três objetivos centrais: o melhor tempo de pista possível, conformidade total com o regulamento da categoria (sem penalidades) e durabilidade para resistir a múltiplas corridas com o mínimo de reparo. Cada peça do carro passou por ciclos de modelagem em CAD (Autodesk Fusion 360), simulações de CFD (dinâmica de fluidos computacional) e testes de estresse estrutural antes da fabricação, que combina usinagem CNC (para o chassi) e impressão 3D (para as demais peças).
+            </p>
+          </div>
+
+          <div className="cg-pillars-section">
+            <h3 className="cg-section-subtitle">Os Três Objetivos Centrais de Engenharia</h3>
+            <div className="cg-pillars-grid">
+              <div className="cg-pillar-card">
+                <div className="cg-pillar-num">01</div>
+                <h4>Melhor Tempo de Pista</h4>
+                <p>
+                  Downforce e arrasto calibrados por perfil NACA 0006 e efeito Coandă, aliados a rolamentos cerâmicos de atrito mínimo para maximizar a inércia nos dois terços finais da pista.
+                </p>
+              </div>
+
+              <div className="cg-pillar-card">
+                <div className="cg-pillar-num">02</div>
+                <h4>Conformidade Total</h4>
+                <p>
+                  Rigor absoluto em todas as dimensões, caixas de exclusão regulamentares, pesos mínimos e proteção do cockpit virtual — garantindo pontuação máxima sem penalidades.
+                </p>
+              </div>
+
+              <div className="cg-pillar-card">
+                <div className="cg-pillar-num">03</div>
+                <h4>Durabilidade Estrutural</h4>
+                <p>
+                  Resistência mecânica comprovada por testes de estresse com 4x a carga de segurança no Halo de Nylon e câmara de CO2 reforçada para múltiplos disparos e impactos de desaceleração.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="cg-pipeline-section">
+            <h3 className="cg-section-subtitle">Ciclo de Desenvolvimento & Manufatura</h3>
+            <div className="cg-pipeline-grid">
+              <div className="cg-pipeline-card">
+                <div className="cg-pipeline-badge">Etapa 01</div>
+                <h4>Modelagem em CAD</h4>
+                <p>Desenvolvimento paramétrico no <strong>Autodesk Fusion 360</strong>, aplicando linhas de gota d'água (drop shape) e transições aerodinâmicas contínuas.</p>
+              </div>
+
+              <div className="cg-pipeline-card">
+                <div className="cg-pipeline-badge">Etapa 02</div>
+                <h4>Simulações CFD</h4>
+                <p>Validação da dinâmica de fluidos computacional para otimizar efeito outwash nas asas, fluxo Venturi no assoalho e redução de vórtices de esteira.</p>
+              </div>
+
+              <div className="cg-pipeline-card">
+                <div className="cg-pipeline-badge">Etapa 03</div>
+                <h4>Testes de Estresse</h4>
+                <p>Análise de elementos finitos e testes empíricos com sobrecarga estrutural de 4x na área do cockpit e resistência extrema à pressão do gás CO2.</p>
+              </div>
+
+              <div className="cg-pipeline-card">
+                <div className="cg-pipeline-badge">Etapa 04</div>
+                <h4>Fabricação Híbrida</h4>
+                <p>Usinagem <strong>CNC de precisão</strong> para o bloco estrutural do chassi e <strong>impressão 3D aditiva</strong> (Nylon e ABS) para os demais componentes funcionais.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="cg-specs-section">
+            <h3 className="cg-section-subtitle">Métricas Técnicas em Destaque</h3>
+            <div className="cg-specs-banner">
+              <div className="cg-spec-card">
+                <span className="cg-spec-val">-0,64g</span>
+                <span className="cg-spec-title">Alívio de Massa</span>
+                <p>Redução de peso alcançada na 4ª evolução do chassi drop shape.</p>
+              </div>
+              <div className="cg-spec-card">
+                <span className="cg-spec-val">NACA 0006</span>
+                <span className="cg-spec-title">Perfil Aerodinâmico</span>
+                <p>Excelente coeficiente de sustentação com mínimo arrasto induzido.</p>
+              </div>
+              <div className="cg-spec-card">
+                <span className="cg-spec-val">Cerâmica</span>
+                <span className="cg-spec-title">Rolamentos</span>
+                <p>1 rolamento cerâmico por roda garantindo velocidade na inércia.</p>
+              </div>
+              <div className="cg-spec-card">
+                <span className="cg-spec-val">4x Carga</span>
+                <span className="cg-spec-title">Fator de Segurança</span>
+                <p>Halo de Nylon testado a 400% da carga obrigatória de segurança.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="cg-about-footer">
+            <button onClick={scrollToTop} className="cg-btn-back-top">
+              ↑ Retornar ao Visualizador 3D
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

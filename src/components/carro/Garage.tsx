@@ -73,7 +73,13 @@ export function CarModel({ carro, selecionada, onSelect, onHover, onReady, contr
 
   const meshToPeca = useMemo(() => {
     const map = new Map<THREE.Object3D, Peca>();
-    for (const p of carro.pecas) for (const m of meshes) if (p.meshes.includes(m.name)) map.set(m, p);
+    for (const p of carro.pecas) {
+      for (const m of meshes) {
+        if (p.meshes.includes(m.name) && !map.has(m)) {
+          map.set(m, p);
+        }
+      }
+    }
     return map;
   }, [carro, meshes]);
 
@@ -89,7 +95,7 @@ export function CarModel({ carro, selecionada, onSelect, onHover, onReady, contr
     }
     if (spin.current) spin.current.updateMatrixWorld(true);
     const box = new THREE.Box3();
-    meshes.forEach((m) => meshToPeca.get(m)?.id === selecionada.id && box.expandByObject(m));
+    meshes.forEach((m) => selecionada.meshes.includes(m.name) && box.expandByObject(m));
     if (!box.isEmpty()) {
       const c = box.getCenter(new THREE.Vector3());
       const r = Math.max(box.getSize(new THREE.Vector3()).length(), 0.6);
@@ -97,7 +103,7 @@ export function CarModel({ carro, selecionada, onSelect, onHover, onReady, contr
       const pos = c.clone().addScaledVector(dir, r * 1.9 + 0.8);
       cc.setLookAt(pos.x, Math.max(pos.y, 0.25), pos.z, c.x, c.y, c.z, true);
     }
-  }, [selecionada, meshes, meshToPeca, controls]);
+  }, [selecionada, meshes, controls]);
 
   useFrame((state, dt) => {
     const d = Math.min(dt, 0.05);
@@ -105,9 +111,10 @@ export function CarModel({ carro, selecionada, onSelect, onHover, onReady, contr
     const t = state.clock.elapsedTime;
     for (const m of meshes) {
       const p = meshToPeca.get(m);
-      const dim = selecionada && p?.id !== selecionada.id;
+      const isSelectedMesh = selecionada ? selecionada.meshes.includes(m.name) : false;
+      const dim = selecionada && !isSelectedMesh;
       const isH = p && hover?.id === p.id;
-      const isS = p && selecionada?.id === p.id;
+      const isS = isSelectedMesh;
       for (const mat of ([] as THREE.MeshPhysicalMaterial[]).concat(m.material as THREE.MeshPhysicalMaterial)) {
         const targetOp = dim ? 0.12 : 1;
         mat.opacity += (targetOp - mat.opacity) * (1 - Math.exp(-8 * d));
