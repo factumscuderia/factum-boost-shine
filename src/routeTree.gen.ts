@@ -9,9 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as CarroRouteImport } from './routes/carro'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiPublicContactRouteImport } from './routes/api/public/contact'
 
+const CarroRoute = CarroRouteImport.update({
+  id: '/carro',
+  path: '/carro',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -25,32 +31,43 @@ const ApiPublicContactRoute = ApiPublicContactRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/carro': typeof CarroRoute
   '/api/public/contact': typeof ApiPublicContactRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/carro': typeof CarroRoute
   '/api/public/contact': typeof ApiPublicContactRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/carro': typeof CarroRoute
   '/api/public/contact': typeof ApiPublicContactRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/public/contact'
+  fullPaths: '/' | '/carro' | '/api/public/contact'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/public/contact'
-  id: '__root__' | '/' | '/api/public/contact'
+  to: '/' | '/carro' | '/api/public/contact'
+  id: '__root__' | '/' | '/carro' | '/api/public/contact'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CarroRoute: typeof CarroRoute
   ApiPublicContactRoute: typeof ApiPublicContactRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/carro': {
+      id: '/carro'
+      path: '/carro'
+      fullPath: '/carro'
+      preLoaderRoute: typeof CarroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CarroRoute: CarroRoute,
   ApiPublicContactRoute: ApiPublicContactRoute,
 }
 export const routeTree = rootRouteImport
