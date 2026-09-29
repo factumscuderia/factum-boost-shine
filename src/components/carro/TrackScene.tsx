@@ -217,8 +217,8 @@ export function TrackScene({ carState, launchTimestamp }: TrackSceneProps) {
 
     const holder = new THREE.Group();
     holder.add(wrap);
-    // Align front with +Z (down the track)
-    holder.rotation.y = Math.PI / 2;
+    // Align front nose straight down +Z (forward along longitudinal track axis)
+    holder.rotation.y = -Math.PI / 2;
     return holder;
   }, [loaded]);
 
