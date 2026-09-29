@@ -123,39 +123,48 @@ function TrackMesh() {
 }
 
 // CO2 Smoke burst effect on launch
-function CO2Smoke({ active, launchTime }: { active: boolean; launchTime: number }) {
+function CO2Smoke({ active }: { active: boolean }) {
   const group = useRef<THREE.Group>(null);
+  const burstStart = useRef<number | null>(null);
   const particles = useMemo(() => {
     return Array.from({ length: 18 }).map(() => ({
-      x: (Math.random() - 0.5) * 0.15,
-      y: (Math.random() - 0.5) * 0.12 + 0.18,
-      z: -(Math.random() * 0.4 + 1.8),
-      vx: (Math.random() - 0.5) * 0.8,
-      vy: Math.random() * 0.5 + 0.1,
-      vz: -(Math.random() * 3.5 + 2.5),
-      scale: Math.random() * 0.15 + 0.1,
+      x: (Math.random() - 0.5) * 0.22,
+      y: (Math.random() - 0.5) * 0.1 + 0.2,
+      z: -(Math.random() * 0.22 + 1.82),
+      vx: (Math.random() - 0.5) * 0.65,
+      vy: Math.random() * 0.38 + 0.08,
+      vz: -(Math.random() * 4 + 3),
+      scale: Math.random() * 0.12 + 0.08,
     }));
   }, []);
 
+  useEffect(() => {
+    burstStart.current = active ? null : 0;
+    if (!active && group.current) group.current.visible = false;
+  }, [active]);
+
   useFrame((state) => {
     if (!group.current || !active) return;
-    const elapsed = state.clock.elapsedTime - launchTime;
-    if (elapsed < 0 || elapsed > 1.8) {
+    if (burstStart.current === null) burstStart.current = state.clock.elapsedTime;
+    const elapsed = state.clock.elapsedTime - burstStart.current;
+    if (elapsed > 0.85) {
       group.current.visible = false;
       return;
     }
     group.current.visible = true;
-    const opacity = Math.max(0, 1 - elapsed / 1.5);
+    const flashIn = Math.min(1, elapsed / 0.045);
+    const dissipate = Math.max(0, 1 - elapsed / 0.85);
+    const opacity = flashIn * dissipate * dissipate;
     group.current.children.forEach((c, idx) => {
       const p = particles[idx];
       const m = c as THREE.Mesh;
       m.position.x = p.x + p.vx * elapsed;
       m.position.y = p.y + p.vy * elapsed;
       m.position.z = p.z + p.vz * elapsed;
-      const s = p.scale * (1 + elapsed * 3.5);
+      const s = p.scale * (1 + elapsed * 5);
       m.scale.set(s, s, s);
       const mat = m.material as THREE.MeshBasicMaterial;
-      if (mat) mat.opacity = opacity * 0.75;
+      if (mat) mat.opacity = opacity * 0.9;
     });
   });
 
@@ -208,8 +217,8 @@ export function TrackScene({ carState, launchTimestamp }: TrackSceneProps) {
 
     const holder = new THREE.Group();
     holder.add(wrap);
-    // Align front nose straight down +Z (forward along longitudinal track axis)
-    holder.rotation.y = -Math.PI / 2;
+    // Align front with +Z (down the track)
+    holder.rotation.y = Math.PI / 2;
     return holder;
   }, [loaded]);
 
@@ -239,18 +248,15 @@ export function TrackScene({ carState, launchTimestamp }: TrackSceneProps) {
         smokeLaunchTime.current = state.clock.elapsedTime;
       }
       const t = Math.max(0, (performance.now() - animStartTime.current) / 1000);
-      // Realistic STEM Racing acceleration: accelerates smoothly from zero along straight track line (+Z)
+      // Realistic STEM Racing acceleration curve: a = 42 m/s² for first 0.35s (CO2 dump), then cruise down track
       let z = 0;
-      const tCo2 = 0.35;
-      const a = 46; // m/s^2 acceleration from zero
-      if (t < tCo2) {
-        z = 0.5 * a * t * t;
+      if (t < 0.4) {
+        z = 0.5 * 45 * t * t;
       } else {
-        const vCoast = a * tCo2; // ~16.1 m/s (~58 km/h)
-        z = 0.5 * a * tCo2 * tCo2 + vCoast * (t - tCo2);
+        const vMax = 45 * 0.4; // ~18 m/s (~65 km/h)
+        z = 0.5 * 45 * 0.16 + vMax * (t - 0.4);
       }
-      z = Math.min(z, TRACK_LEN + 4);
-      // Move strictly in a straight line along the longitudinal Z axis
+      z = Math.min(z, TRACK_LEN + 2);
       carGroup.current.position.set(-0.95, 0.03, z);
       carGroup.current.rotation.set(0, 0, 0);
 
@@ -287,7 +293,7 @@ export function TrackScene({ carState, launchTimestamp }: TrackSceneProps) {
       <group ref={carGroup} position={[-0.95, 0.03, 0]}>
         <primitive object={carModel} />
         <ContactShadows position={[0, 0.005, 0]} opacity={0.9} scale={6} blur={2.4} far={2} color="#000000" />
-        <CO2Smoke active={carState === "launched"} launchTime={smokeLaunchTime.current} />
+        <CO2Smoke active={carState === "launched"} />
       </group>
     </>
   );

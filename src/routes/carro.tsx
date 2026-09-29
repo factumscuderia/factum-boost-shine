@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Suspense, useCallback, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useProgress } from "@react-three/drei";
-import { Zap, Wrench, ChevronDown, Award, Gauge, Shield, Cpu, Wind, Layers } from "lucide-react";
+import { Zap, Wrench, ChevronDown } from "lucide-react";
 import { CARRO_FB06, type Peca } from "@/components/carro/cars";
 import { GarageScene } from "@/components/carro/Garage";
 import { TrackScene } from "@/components/carro/TrackScene";
@@ -22,8 +22,7 @@ export const Route = createFileRoute("/carro")({
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800;900&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" },
     ],
   }),
   component: CarroPage,
@@ -89,8 +88,8 @@ function CarroPage() {
   return (
     <div className="cg-root" id="visualizador">
       <header className={`cg-header ${modo === "pista" ? "mode-track" : ""}`}>
-        <a href="/" className="cg-back-site">← Factum Scuderia</a>
-        
+        <a href="/" className="cg-back-site">Factum Scuderia</a>
+
         <div className="cg-title">
           <h1>FB-06</h1>
         </div>
@@ -103,7 +102,7 @@ function CarroPage() {
               aria-label="Ver o FB-06 na pista e testar tempo de reação"
             >
               <span className="cg-cta-track-text">
-                <strong><Zap size={15} style={{ verticalAlign: 'middle', marginRight: 4 }} />VEJA-O NA PISTA</strong>
+                <strong>Veja-o na pista</strong>
                 <small>Teste de Reação F1</small>
               </span>
             </button>
@@ -113,7 +112,6 @@ function CarroPage() {
               onClick={() => setModo("garagem")}
               aria-label="Voltar para a garagem 3D"
             >
-              <Wrench size={15} />
               Explorar Peças 3D
             </button>
           )}
@@ -146,15 +144,14 @@ function CarroPage() {
             <div className={`cg-hint ${hint && ready ? "" : "hide"}`}>Arraste para girar · toque numa peça para explorar</div>
 
             <button className="cg-scroll-indicator" onClick={scrollToAbout} aria-label="Rolar para a seção sobre o FB06">
-              <span>Sobre o FB06 · Engenharia</span>
-              <ChevronDown size={16} />
+              <span>Sobre o FB06 e sua engenharia</span>
             </button>
 
             <aside className={`cg-panel ${sel ? "open" : ""}`} aria-live="polite">
               {sel && (
                 <>
-                  <button className="cg-close" onClick={() => select(null)}>← Voltar à vista geral</button>
-                  <span className="cg-tag">{carro.nome} · Componente</span>
+                  <button className="cg-close" onClick={() => select(null)}>Voltar à vista geral</button>
+                  <span className="cg-tag">{carro.nome} — Componente</span>
                   <h2>{sel.nome}</h2>
                   <div className="cg-mat"><span style={{ background: sel.cor }} />{sel.material}</div>
                   <div className="cg-lbl">Função física</div>
@@ -185,7 +182,7 @@ function CarroPage() {
       <section className="cg-about" id="sobre-fb06" aria-labelledby="sobre-fb06-titulo">
         <div className="cg-about-inner">
           <div className="cg-about-header">
-            <span className="cg-about-badge">Engenharia & Alta Performance · Factum Scuderia</span>
+            <span className="cg-about-badge">Engineering Portfolio 2024 · Factum Scuderia</span>
             <h2 id="sobre-fb06-titulo" className="cg-about-title">Sobre o FB06</h2>
             <div className="cg-about-line" />
             <p className="cg-about-subtitle">
@@ -220,21 +217,13 @@ function CarroPage() {
           {/* Bloco de Destaque / Lead Card com visual da Home */}
           <div className="cg-about-lead-card">
             <div className="cg-about-lead-icon">
-              <Wind size={26} />
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
             </div>
-            <div className="cg-about-lead-content">
-              <h3 className="cg-about-lead-heading">Excelência em Cada Milímetro</h3>
-              <p className="cg-about-lead">
-                O FB06 foi desenvolvido pela equipe de engenharia da Factum Scuderia com três objetivos centrais: o melhor tempo de pista possível, conformidade total com o regulamento da categoria (sem penalidades) e durabilidade para resistir a múltiplas corridas com o mínimo de reparo. Cada peça do carro passou por ciclos de modelagem em CAD (Autodesk Fusion 360), simulações de CFD (dinâmica de fluidos computacional) e testes de estresse estrutural antes da fabricação, que combina usinagem CNC (para o chassi) e impressão 3D (para as demais peças).
-              </p>
-              <div className="cg-about-lead-pills">
-                <span className="cg-pill">#AerodinâmicaCFD</span>
-                <span className="cg-pill">#UsinagemCNC</span>
-                <span className="cg-pill">#Impressão3D</span>
-                <span className="cg-pill">#EfeitoVenturi</span>
-                <span className="cg-pill">#STEMRacing</span>
-              </div>
-            </div>
+            <p className="cg-about-lead">
+              O FB06 foi desenvolvido pela equipe de engenharia da Factum Scuderia com três objetivos centrais: o melhor tempo de pista possível, conformidade total com o regulamento da categoria (sem penalidades) e durabilidade para resistir a múltiplas corridas com o mínimo de reparo. Cada peça do carro passou por ciclos de modelagem em CAD (Autodesk Fusion 360), simulações de CFD (dinâmica de fluidos computacional) e testes de estresse estrutural antes da fabricação, que combina usinagem CNC (para o chassi) e impressão 3D (para as demais peças).
+            </p>
           </div>
 
           {/* Os Três Objetivos Centrais de Engenharia */}
@@ -327,7 +316,7 @@ function CarroPage() {
 
           <div className="cg-about-footer">
             <button onClick={scrollToTop} className="cg-btn-back-top">
-              ↑ Retornar ao Topo
+              Retornar ao topo
             </button>
           </div>
         </div>
