@@ -19,6 +19,9 @@
  */
 
 @theme inline {
+  --font-body: "Montserrat", sans-serif;
+  --font-heading: "League Spartan", sans-serif;
+  --font-sans: "Montserrat", sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -140,5 +143,10 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
   }
 }

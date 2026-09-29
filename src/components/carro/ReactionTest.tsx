@@ -140,18 +140,17 @@ export function ReactionTest({ onLaunch, onFalseStart, onResetCar, onBackToGarag
       {/* Barra de controle superior */}
       <div className="cg-rx-topbar" onClick={(e) => e.stopPropagation()}>
         <button className="cg-rx-btn-back" onClick={onBackToGarage}>
-          ← Voltar à Garagem
+          Voltar à garagem
         </button>
 
         <div className="cg-rx-badges">
           {bestTime !== null && (
             <div className="cg-rx-record-badge">
-              <span className="cg-rx-record-icon">🏆</span>
               <span>Seu Recorde: <strong>{bestTime}ms</strong></span>
             </div>
           )}
           <button className="cg-rx-btn-sound" onClick={toggleSound} title={muted ? "Ativar som" : "Desativar som"}>
-            {muted ? "🔇 Som Desativado" : "🔊 Som Ativo"}
+            {muted ? "Som desativado" : "Som ativo"}
           </button>
         </div>
       </div>
@@ -175,7 +174,6 @@ export function ReactionTest({ onLaunch, onFalseStart, onResetCar, onBackToGarag
       <div className="cg-rx-status">
         {(state === "countdown" || state === "waiting_out") && (
           <div className="cg-rx-prompt pulse">
-            <span className="cg-rx-prompt-icon">⚠️</span>
             <span>Toque ou pressione <strong>ESPAÇO</strong> assim que as 5 luzes apagarem!</span>
           </div>
         )}
@@ -193,7 +191,7 @@ export function ReactionTest({ onLaunch, onFalseStart, onResetCar, onBackToGarag
             <h2>LARGADA QUEIMADA!</h2>
             <p>Você acelerou antes das luzes vermelhas se apagarem. Como na F1 real, isso resultaria em penalidade.</p>
             <button className="cg-rx-retry-btn" onClick={startSequence}>
-              Tentar Novamente ↺
+              Tentar novamente
             </button>
           </div>
         )}
@@ -218,12 +216,12 @@ export function ReactionTest({ onLaunch, onFalseStart, onResetCar, onBackToGarag
             })()}
 
             <div className="cg-rx-benchmark">
-              <span>⏱️ Piloto de F1 em média: <strong>~200-300ms</strong></span>
+              <span>Piloto de F1 em média: <strong>aprox. 200–300 ms</strong></span>
             </div>
 
             <div className="cg-rx-actions">
               <button className="cg-rx-retry-btn" onClick={startSequence}>
-                Tentar Novamente ↺
+                Tentar novamente
               </button>
               <button className="cg-rx-secondary-btn" onClick={onBackToGarage}>
                 Ver Peças do Carro
