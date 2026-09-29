@@ -45,7 +45,7 @@ export function ReactionTest({ onLaunch, onFalseStart, onResetCar, onBackToGarag
     setActiveLights(0);
     setReactionTime(null);
 
-    // Sequence 5 lights turning on at 800ms intervals
+    // Sequence 5 lights turning on at 750ms intervals
     for (let i = 1; i <= 5; i++) {
       const t = setTimeout(() => {
         setActiveLights(i);
@@ -81,7 +81,7 @@ export function ReactionTest({ onLaunch, onFalseStart, onResetCar, onBackToGarag
     }
 
     if (state === "countdown" || state === "waiting_out") {
-      // FALSE START / LARGADA QUEIMADA!
+      // FALSE START / LARGADA QUEIMADA
       clearAllTimers();
       setActiveLights(5);
       setState("false_start");
@@ -109,7 +109,7 @@ export function ReactionTest({ onLaunch, onFalseStart, onResetCar, onBackToGarag
     }
   }, [state, clearAllTimers, onFalseStart, onLaunch, startSequence]);
 
-  // Spacebar trigger support
+  // Spacebar and Enter trigger support
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === "Space" || e.code === "Enter") {
@@ -121,24 +121,33 @@ export function ReactionTest({ onLaunch, onFalseStart, onResetCar, onBackToGarag
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleTrigger]);
 
-  const toggleSound = (e: React.MouseEvent) => {
+  const toggleSound = (e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
     const next = sound.toggleMute();
     setMuted(next);
   };
 
   const getRating = (ms: number) => {
-    if (ms < 200) return { label: "Reflexo sobre-humano!", desc: "Mais rápido que a maioria dos pilotos profissionais!", color: "#00e676" };
-    if (ms <= 260) return { label: "Nível Piloto de F1!", desc: "Dentro do tempo de reação de elite da Fórmula 1 (~200-250ms).", color: "#4d74ff" };
-    if (ms <= 330) return { label: "Excelente Largada!", desc: "Tempo de reação no grid oficial de competição.", color: "#8fa8ff" };
-    if (ms <= 420) return { label: "Boa Reação!", desc: "Mantenha a concentração no ponto cego das luzes.", color: "#ffb300" };
-    return { label: "Aqueça os Reflexos", desc: "Tente focar apenas no momento em que o vermelho sumir.", color: "#ff7043" };
+    if (ms < 200) return { label: "Reflexo sobre-humano!", desc: "Mais rápido que a maioria dos pilotos profissionais!" };
+    if (ms <= 260) return { label: "Nível Piloto de F1!", desc: "Dentro do tempo de reação de elite da Fórmula 1 (200–250ms)." };
+    if (ms <= 330) return { label: "Excelente Largada!", desc: "Tempo de reação no grid oficial de competição." };
+    if (ms <= 420) return { label: "Boa Reação!", desc: "Mantenha a concentração no ponto cego das luzes." };
+    return { label: "Aqueça os Reflexos", desc: "Tente focar apenas no momento em que o vermelho sumir." };
   };
 
   return (
-    <div className="cg-rx-overlay" onClick={handleTrigger}>
+    <div
+      className="cg-rx-overlay"
+      onClick={handleTrigger}
+      onTouchStart={(e) => {
+        // Instant touch response without click delay on mobile/tablet
+        if ((e.target as HTMLElement).closest("button")) return;
+        e.preventDefault();
+        handleTrigger();
+      }}
+    >
       {/* Barra de controle superior */}
-      <div className="cg-rx-topbar" onClick={(e) => e.stopPropagation()}>
+      <div className="cg-rx-topbar" onClick={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
         <button className="cg-rx-btn-back" onClick={onBackToGarage}>
           Voltar à garagem
         </button>
@@ -174,7 +183,7 @@ export function ReactionTest({ onLaunch, onFalseStart, onResetCar, onBackToGarag
       <div className="cg-rx-status">
         {(state === "countdown" || state === "waiting_out") && (
           <div className="cg-rx-prompt pulse">
-            <span>Toque ou pressione <strong>ESPAÇO</strong> assim que as 5 luzes apagarem!</span>
+            <span>Toque na tela ou pressione <strong>ESPAÇO</strong> assim que as luzes apagarem!</span>
           </div>
         )}
 
@@ -186,7 +195,7 @@ export function ReactionTest({ onLaunch, onFalseStart, onResetCar, onBackToGarag
 
         {/* LARGADA QUEIMADA */}
         {state === "false_start" && (
-          <div className="cg-rx-result-card false-start" onClick={(e) => e.stopPropagation()}>
+          <div className="cg-rx-result-card false-start" onClick={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
             <div className="cg-rx-warning-badge">LARGADA ANTECIPADA</div>
             <h2>LARGADA QUEIMADA!</h2>
             <p>Você acelerou antes das luzes vermelhas se apagarem. Como na F1 real, isso resultaria em penalidade.</p>
@@ -198,7 +207,7 @@ export function ReactionTest({ onLaunch, onFalseStart, onResetCar, onBackToGarag
 
         {/* RESULTADO DA LARGADA */}
         {state === "success" && reactionTime !== null && (
-          <div className="cg-rx-result-card success" onClick={(e) => e.stopPropagation()}>
+          <div className="cg-rx-result-card success" onClick={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
             <span className="cg-rx-result-tag">Seu Tempo de Reação</span>
             <div className="cg-rx-time-display">
               <span className="cg-rx-time-val">{reactionTime}</span>
@@ -209,7 +218,7 @@ export function ReactionTest({ onLaunch, onFalseStart, onResetCar, onBackToGarag
               const rating = getRating(reactionTime);
               return (
                 <div className="cg-rx-rating">
-                  <strong style={{ color: rating.color }}>{rating.label}</strong>
+                  <strong style={{ color: "#ffffff" }}>{rating.label}</strong>
                   <p>{rating.desc}</p>
                 </div>
               );

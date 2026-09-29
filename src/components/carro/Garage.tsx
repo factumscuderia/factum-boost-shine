@@ -11,16 +11,14 @@ const CAR_LEN = 4.2;
 
 function acabamentoDe(c: THREE.Color, meshName: string, matName: string): THREE.MeshPhysicalMaterial {
   const n = (matName + " " + meshName).toLowerCase();
-  const hsl = { h: 0, s: 0, l: 0 };
-  c.getHSL(hsl);
   const base = { envMapIntensity: 1.2, transparent: true };
-  if (/eixo|steel|aço|satin/.test(n) || (hsl.s < 0.1 && hsl.l > 0.3 && hsl.l < 0.5))
-    return new THREE.MeshPhysicalMaterial({ ...base, color: "#b8c0c8", metalness: 1, roughness: 0.22 });
-  if (/blue/.test(n) || (hsl.s > 0.4 && hsl.h > 0.55 && hsl.h < 0.72))
-    return new THREE.MeshPhysicalMaterial({ ...base, color: /blue/.test(n) ? "#0d2f7a" : c.clone().multiplyScalar(0.75), metalness: 0.6, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.04 });
-  if (/black/.test(n) || hsl.l < 0.22)
-    return new THREE.MeshPhysicalMaterial({ ...base, color: "#0b0c10", metalness: 0.3, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.08 });
-  return new THREE.MeshPhysicalMaterial({ ...base, color: hsl.l > 0.8 ? "#f4f4f0" : c, metalness: 0, roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.15 });
+  if (/eixo|steel|aço|satin|roda|wheel|hubcap/.test(n))
+    return new THREE.MeshPhysicalMaterial({ ...base, color: "#ffffff", metalness: 0.8, roughness: 0.2 });
+  if (/blue|chassi|body|sidepod|difusor|assoalho/.test(n))
+    return new THREE.MeshPhysicalMaterial({ ...base, color: "#2a4fd4", metalness: 0.5, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.05 });
+  if (/black|halo|asa|wing/.test(n))
+    return new THREE.MeshPhysicalMaterial({ ...base, color: "#011039", metalness: 0.2, roughness: 0.35, clearcoat: 0.8, clearcoatRoughness: 0.1 });
+  return new THREE.MeshPhysicalMaterial({ ...base, color: "#ffffff", metalness: 0.1, roughness: 0.3, clearcoat: 0.6, clearcoatRoughness: 0.15 });
 }
 
 function useCarModel(carro: Carro) {
@@ -37,7 +35,7 @@ function useCarModel(carro: Carro) {
       const m = o as THREE.Mesh;
       if (!m.isMesh) return;
       const mats = ([] as THREE.Material[]).concat(m.material);
-      const next = mats.map((mm) => acabamentoDe((mm as THREE.MeshStandardMaterial).color ?? new THREE.Color("#fff"), m.name, mm.name || ""));
+      const next = mats.map((mm) => acabamentoDe((mm as THREE.MeshStandardMaterial).color ?? new THREE.Color("#ffffff"), m.name, mm.name || ""));
       m.material = Array.isArray(m.material) ? next : next[0];
       m.castShadow = true;
       meshes.push(m);
@@ -120,7 +118,7 @@ export function CarModel({ carro, selecionada, onSelect, onHover, onReady, contr
         mat.opacity += (targetOp - mat.opacity) * (1 - Math.exp(-8 * d));
         mat.depthWrite = mat.opacity > 0.9;
         mat.emissive.set("#2a4fd4");
-        mat.emissiveIntensity = isH || isS ? 0.35 + Math.sin(t * 4) * 0.1 : p && !selecionada ? 0.03 + Math.sin(t * 1.6) * 0.03 : 0;
+        mat.emissiveIntensity = isH || isS ? 0.4 + Math.sin(t * 4) * 0.15 : p && !selecionada ? 0.03 + Math.sin(t * 1.6) * 0.03 : 0;
       }
     }
   });
@@ -167,7 +165,7 @@ function LogoWall() {
       {/* parede */}
       <mesh position={[0, 3, -0.05]} receiveShadow>
         <planeGeometry args={[30, 8]} />
-        <meshStandardMaterial color="#050b22" roughness={0.85} metalness={0.2} />
+        <meshStandardMaterial color="#011039" roughness={0.9} metalness={0.1} />
       </mesh>
       {/* painel pit-wall */}
       <mesh position={[0, 2.6, 0]}>
@@ -182,13 +180,13 @@ function LogoWall() {
       {[-1, 1].map((s) => (
         <mesh key={s} position={[0, 2.6 + s * 1.92, 0.06]}>
           <boxGeometry args={[9, 0.04, 0.02]} />
-          <meshBasicMaterial color="#4d74ff" toneMapped={false} />
+          <meshBasicMaterial color="#2a4fd4" toneMapped={false} />
         </mesh>
       ))}
       {[-7.5, 7.5].map((x) => (
         <mesh key={x} position={[x, 2.6, 0.02]}>
           <boxGeometry args={[0.05, 3.8, 0.02]} />
-          <meshBasicMaterial color="#8fa8ff" toneMapped={false} />
+          <meshBasicMaterial color="#ffffff" toneMapped={false} />
         </mesh>
       ))}
     </group>
@@ -199,37 +197,37 @@ export function GarageScene(props: Props) {
   const controls = useRef<CameraControls>(null);
   return (
     <>
-      <color attach="background" args={["#02061a"]} />
-      <fog attach="fog" args={["#02061a", 10, 26]} />
-      <ambientLight intensity={0.15} />
+      <color attach="background" args={["#011039"]} />
+      <fog attach="fog" args={["#011039", 10, 26]} />
+      <ambientLight intensity={0.25} />
       <spotLight position={[0, 7, 1]} angle={0.45} penumbra={0.8} intensity={120} castShadow shadow-mapSize={[1024, 1024]} color="#ffffff" />
-      <spotLight position={[-5, 4, 4]} angle={0.5} penumbra={1} intensity={45} color="#9fb4ff" />
-      <spotLight position={[5, 3, -3]} angle={0.5} penumbra={1} intensity={40} color="#4d74ff" />
+      <spotLight position={[-5, 4, 4]} angle={0.5} penumbra={1} intensity={45} color="#2a4fd4" />
+      <spotLight position={[5, 3, -3]} angle={0.5} penumbra={1} intensity={40} color="#2a4fd4" />
 
-      <Environment resolution={256}>
+      <Environment resolution={typeof window !== "undefined" && window.innerWidth < 768 ? 128 : 256}>
         <Lightformer intensity={3} position={[0, 5, 0]} rotation-x={Math.PI / 2} scale={[8, 2, 1]} />
         <Lightformer intensity={1.5} position={[-5, 1.5, 0]} rotation-y={Math.PI / 2} scale={[12, 1, 1]} />
         <Lightformer intensity={1.5} position={[5, 1.5, 0]} rotation-y={-Math.PI / 2} scale={[12, 1, 1]} />
-        <Lightformer intensity={2} color="#4d74ff" position={[0, 1, -6]} scale={[12, 1.5, 1]} />
+        <Lightformer intensity={2} color="#2a4fd4" position={[0, 1, -6]} scale={[12, 1.5, 1]} />
         <Lightformer intensity={0.8} position={[0, 1, 6]} scale={[10, 3, 1]} />
       </Environment>
 
       <CarModel {...props} controls={controls} />
 
-      <ContactShadows position={[0, 0.005, 0]} opacity={0.85} scale={10} blur={2.2} far={2} resolution={512} color="#000000" />
+      <ContactShadows position={[0, 0.005, 0]} opacity={0.85} scale={10} blur={2.2} far={2} resolution={typeof window !== "undefined" && window.innerWidth < 768 ? 256 : 512} color="#000000" />
 
       <mesh rotation-x={-Math.PI / 2}>
         <planeGeometry args={[40, 40]} />
         <MeshReflectorMaterial
           blur={[300, 80]}
-          resolution={1024}
+          resolution={typeof window !== "undefined" && window.innerWidth < 768 ? 512 : 1024}
           mixBlur={1}
           mixStrength={30}
           roughness={0.9}
           depthScale={1.1}
           minDepthThreshold={0.4}
           maxDepthThreshold={1.3}
-          color="#0a0f22"
+          color="#011039"
           metalness={0.6}
           mirror={0.5}
         />
@@ -248,7 +246,7 @@ export function GarageScene(props: Props) {
         minDistance={1.2}
         maxDistance={11}
         maxPolarAngle={Math.PI / 2.08}
-        smoothTime={0.6}
+        smoothTime={0.4}
       />
     </>
   );
