@@ -1,4 +1,7 @@
-/* ============================================================
+const fs = require('fs');
+const path = require('path');
+
+const css = `/* ============================================================
    FACTUM SCUDERIA — CARRO PAGE DESIGN SYSTEM
    Editorial race-team aesthetic. No glassmorphism, no neon.
    ============================================================ */
@@ -365,3 +368,7 @@
 @media (prefers-reduced-motion: reduce) {
   .cg-panel, .cg-hint, .cg-scroll-indicator, .cg-cta-track-btn { transition: none; animation: none; }
 }
+`;
+
+fs.writeFileSync(path.join(__dirname, 'src/components/carro/carro.css'), css, 'utf8');
+console.log('CSS written: ' + css.length + ' bytes');

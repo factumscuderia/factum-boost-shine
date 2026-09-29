@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Suspense, useCallback, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useProgress } from "@react-three/drei";
+import { Zap, Wrench, ChevronDown } from "lucide-react";
 import { CARRO_FB06, type Peca } from "@/components/carro/cars";
 import { GarageScene } from "@/components/carro/Garage";
 import { TrackScene } from "@/components/carro/TrackScene";
@@ -89,9 +90,8 @@ function CarroPage() {
               onClick={() => { setModo("pista"); setSel(null); }}
               aria-label="Ver o FB-06 na pista e testar tempo de reação"
             >
-              <span className="cg-cta-track-pulse" />
               <span className="cg-cta-track-text">
-                <strong>⚡ VEJA-O NA PISTA</strong>
+                <strong><Zap size={15} style={{ verticalAlign: 'middle', marginRight: 4 }} />VEJA-O NA PISTA</strong>
                 <small>Teste de Reação F1</small>
               </span>
             </button>
@@ -101,13 +101,17 @@ function CarroPage() {
               onClick={() => setModo("garagem")}
               aria-label="Voltar para a garagem 3D"
             >
-              🛠️ Explorar Peças 3D
+              <Wrench size={15} />
+              Explorar Peças 3D
             </button>
           )}
         </div>
       </header>
 
       <div className={`cg-stage ${modo === "pista" ? "mode-track" : "mode-garage"}`}>
+        {/* Editorial ghost typography — Red Bull / McLaren style */}
+        <div className="cg-stage-backdrop-text" aria-hidden="true">FB06</div>
+
         <Canvas
           shadows
           dpr={[1, 2]}
@@ -132,23 +136,9 @@ function CarroPage() {
             )}
             <div className={`cg-hint ${hint && ready ? "" : "hide"}`}>Arraste para girar · toque numa peça para explorar</div>
 
-            {/* Chamada flutuante para a pista */}
-            <div className="cg-stage-track-cta-container">
-              <button
-                className="cg-stage-track-cta"
-                onClick={() => { setModo("pista"); setSel(null); }}
-              >
-                <span className="cg-sparkle">⚡</span>
-                <span>Ver o FB-06 na Pista · Teste de Reação</span>
-                <span className="cg-arrow">→</span>
-              </button>
-            </div>
-
             <button className="cg-scroll-indicator" onClick={scrollToAbout} aria-label="Rolar para a seção sobre o FB06">
               <span>Sobre o FB06 · Engenharia</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
+              <ChevronDown size={16} />
             </button>
 
             <aside className={`cg-panel ${sel ? "open" : ""}`} aria-live="polite">
