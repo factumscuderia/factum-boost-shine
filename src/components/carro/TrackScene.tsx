@@ -48,8 +48,8 @@ function TrackMesh() {
 
       {/* Fios de guia de nylon / aço (STEM Racing guide lines) */}
       {[-0.95, 0.95].map((x, i) => (
-        <mesh key={i} position={[x, 0.06, 0]}>
-          <cylinderGeometry args={[0.008, 0.008, TRACK_LEN + 10, 8]} rotation={[Math.PI / 2, 0, 0]} />
+        <mesh key={i} position={[x, 0.06, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.008, 0.008, TRACK_LEN + 10, 8]} />
           <meshStandardMaterial color="#c0c9d6" metalness={0.9} roughness={0.2} />
         </mesh>
       ))}
@@ -128,8 +128,6 @@ function CO2Smoke({ active }: { active: boolean }) {
   const burstStart = useRef<number | null>(null);
   const particles = useMemo(() => {
     return Array.from({ length: 18 }).map(() => ({
-      x: (Math.random() - 0.5) * 0.15,
-      y: (Math.random() - 0.5) * 0.12 + 0.18,
       x: (Math.random() - 0.5) * 0.22,
       y: (Math.random() - 0.5) * 0.1 + 0.2,
       z: -(Math.random() * 0.22 + 1.82),
