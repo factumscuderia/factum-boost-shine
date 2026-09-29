@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Factum Scuderia</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800;900&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
 
 <style>
   :root {
@@ -23,8 +24,16 @@
 
   html { scroll-behavior: smooth; }
 
+  
+  body, p, label, input, textarea, select, button {
+    font-family: 'Montserrat', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6, .section-title, .hero-tagline, .stat-num, .stem-card-title, .feature-title, .team-name, .data-number, .consequences-title, .app-block-title, .contato-title, .sponsors-title {
+    font-family: 'League Spartan', sans-serif;
+  }
+
   body {
-    font-family: 'Barlow', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     color: var(--navy);
     background: var(--white);
     overflow-x: hidden;
@@ -72,7 +81,7 @@
   .nav-links a {
     color: rgba(255,255,255,0.75);
     text-decoration: none;
-    font-family: 'Barlow', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 500;
     font-size: 1.1rem;
     letter-spacing: 0.08em;
@@ -162,7 +171,7 @@
   }
 
   .hero-tagline {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'League Spartan', sans-serif;
     font-size: clamp(3.4rem, 7vw, 5.6rem);
     font-weight: 700;
     color: var(--white);
@@ -243,7 +252,7 @@
   }
 
   .stat-num {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'League Spartan', sans-serif;
     font-size: 3rem;
     font-weight: 800;
     color: var(--white);
@@ -271,7 +280,7 @@
   }
 
   .section-title {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'League Spartan', sans-serif;
     font-size: clamp(3rem, 5.5vw, 4.4rem);
     font-weight: 700;
     color: var(--navy);
@@ -332,7 +341,7 @@
   }
 
   .stem-card-title {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'League Spartan', sans-serif;
     font-size: 2.3rem;
     font-weight: 700;
     margin-bottom: 14px;
@@ -392,7 +401,7 @@
   }
 
   .feature-title {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'League Spartan', sans-serif;
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--navy);
@@ -452,13 +461,13 @@
     align-items: center;
     justify-content: center;
     color: white;
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'League Spartan', sans-serif;
     font-size: 1.3rem;
     font-weight: 700;
   }
 
   .team-name {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'League Spartan', sans-serif;
     font-size: 1.35rem;
     font-weight: 700;
     color: var(--navy);
@@ -514,7 +523,7 @@
   }
 
   .data-number {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'League Spartan', sans-serif;
     font-size: 3.8rem;
     font-weight: 800;
     line-height: 1;
@@ -543,7 +552,7 @@
   }
 
   .consequences-title {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'League Spartan', sans-serif;
     font-size: 1.8rem;
     font-weight: 700;
     color: var(--navy);
@@ -597,7 +606,7 @@
   }
 
   .app-block-title {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'League Spartan', sans-serif;
     font-size: 2.4rem;
     font-weight: 700;
     margin-bottom: 14px;
@@ -639,7 +648,7 @@
   }
 
   .app-download-title {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'League Spartan', sans-serif;
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 8px;
@@ -728,7 +737,7 @@
   }
 
   .contato-title {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'League Spartan', sans-serif;
     font-size: clamp(2.4rem, 4.5vw, 3.6rem);
     font-weight: 700;
     color: var(--white);
@@ -775,7 +784,7 @@
     color: white;
     padding: 13px 16px;
     border-radius: 8px;
-    font-family: 'Barlow', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-size: 1.05rem;
     outline: none;
     transition: border-color 0.2s;
@@ -808,7 +817,7 @@
     border: none;
     padding: 15px 32px;
     border-radius: 8px;
-    font-family: 'Barlow', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 700;
     font-size: 1.08rem;
     letter-spacing: 0.08em;
@@ -1046,7 +1055,7 @@
   .sponsors-wrap { max-width: 1100px; margin: 80px auto 0; text-align: center; }
   .sponsors-wrap .section-tag { color: var(--accent); }
   .sponsors-wrap .sponsors-title {
-    font-family: 'Barlow Condensed', sans-serif;
+    font-family: 'League Spartan', sans-serif;
     font-size: clamp(1.8rem, 3vw, 2.4rem);
     font-weight: 700; color: var(--navy);
     margin-bottom: 8px;

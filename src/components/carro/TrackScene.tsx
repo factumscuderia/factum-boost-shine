@@ -48,8 +48,8 @@ function TrackMesh() {
 
       {/* Fios de guia de nylon / aço (STEM Racing guide lines) */}
       {[-0.95, 0.95].map((x, i) => (
-        <mesh key={i} position={[x, 0.06, 0]}>
-          <cylinderGeometry args={[0.008, 0.008, TRACK_LEN + 10, 8]} rotation={[Math.PI / 2, 0, 0]} />
+        <mesh key={i} position={[x, 0.06, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.008, 0.008, TRACK_LEN + 10, 8]} />
           <meshStandardMaterial color="#c0c9d6" metalness={0.9} roughness={0.2} />
         </mesh>
       ))}
@@ -208,8 +208,8 @@ export function TrackScene({ carState, launchTimestamp }: TrackSceneProps) {
 
     const holder = new THREE.Group();
     holder.add(wrap);
-    // Align front with +Z (down the track)
-    holder.rotation.y = Math.PI / 2;
+    // Align front nose straight down +Z (forward along longitudinal track axis)
+    holder.rotation.y = -Math.PI / 2;
     return holder;
   }, [loaded]);
 
@@ -231,29 +231,33 @@ export function TrackScene({ carState, launchTimestamp }: TrackSceneProps) {
       cam.position.set(-2.8, 1.45, -2.5);
       cam.lookAt(-0.95, 0.45, 8.0);
     } else if (carState === "false_start") {
-      // Small jerk forward and sudden halt
+      // Small jerk forward on start line and sudden halt
       carGroup.current.position.set(-0.95, 0.03, 0.22);
-      carGroup.current.rotation.set(0.015, 0, 0);
+      carGroup.current.rotation.set(0, 0, 0);
     } else if (carState === "launched") {
       if (smokeLaunchTime.current === 0) {
         smokeLaunchTime.current = state.clock.elapsedTime;
       }
       const t = Math.max(0, (performance.now() - animStartTime.current) / 1000);
-      // Realistic STEM Racing acceleration curve: a = 42 m/s² for first 0.35s (CO2 dump), then cruise down track
+      // Realistic STEM Racing acceleration: accelerates smoothly from zero along straight track line (+Z)
       let z = 0;
-      if (t < 0.4) {
-        z = 0.5 * 45 * t * t;
+      const tCo2 = 0.35;
+      const a = 46; // m/s^2 acceleration from zero
+      if (t < tCo2) {
+        z = 0.5 * a * t * t;
       } else {
-        const vMax = 45 * 0.4; // ~18 m/s (~65 km/h)
-        z = 0.5 * 45 * 0.16 + vMax * (t - 0.4);
+        const vCoast = a * tCo2; // ~16.1 m/s (~58 km/h)
+        z = 0.5 * a * tCo2 * tCo2 + vCoast * (t - tCo2);
       }
-      z = Math.min(z, TRACK_LEN + 2);
+      z = Math.min(z, TRACK_LEN + 4);
+      // Move strictly in a straight line along the longitudinal Z axis
       carGroup.current.position.set(-0.95, 0.03, z);
+      carGroup.current.rotation.set(0, 0, 0);
 
       // Camera dynamic tracking during launch
       const cam = state.camera;
-      if (z < 20) {
-        cam.position.z = THREE.MathUtils.lerp(cam.position.z, -2.5 + z * 0.35, 0.08);
+      if (z < 22) {
+        cam.position.z = THREE.MathUtils.lerp(cam.position.z, -2.5 + z * 0.32, 0.08);
         cam.lookAt(-0.95, 0.45, z + 6.0);
       }
     }

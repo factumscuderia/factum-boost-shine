@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Suspense, useCallback, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useProgress } from "@react-three/drei";
-import { Zap, Wrench, ChevronDown } from "lucide-react";
+import { Zap, Wrench, ChevronDown, Award, Gauge, Shield, Cpu, Wind, Layers } from "lucide-react";
 import { CARRO_FB06, type Peca } from "@/components/carro/cars";
 import { GarageScene } from "@/components/carro/Garage";
 import { TrackScene } from "@/components/carro/TrackScene";
@@ -22,7 +22,8 @@ export const Route = createFileRoute("/carro")({
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800;900&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" },
     ],
   }),
   component: CarroPage,
@@ -74,6 +75,17 @@ function CarroPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const switchToTrackAndTop = () => {
+    setModo("pista");
+    setSel(null);
+    scrollToTop();
+  };
+
+  const switchToGarageAndTop = () => {
+    setModo("garagem");
+    scrollToTop();
+  };
+
   return (
     <div className="cg-root" id="visualizador">
       <header className={`cg-header ${modo === "pista" ? "mode-track" : ""}`}>
@@ -109,9 +121,6 @@ function CarroPage() {
       </header>
 
       <div className={`cg-stage ${modo === "pista" ? "mode-track" : "mode-garage"}`}>
-        {/* Editorial ghost typography — Red Bull / McLaren style */}
-        <div className="cg-stage-backdrop-text" aria-hidden="true">FB06</div>
-
         <Canvas
           shadows
           dpr={[1, 2]}
@@ -172,31 +181,72 @@ function CarroPage() {
         )}
       </div>
 
-      {/* Seção Sobre o FB06 abaixo do visualizador */}
+      {/* Seção Sobre o FB06 abaixo do visualizador — Padrão interativo idêntico à Home */}
       <section className="cg-about" id="sobre-fb06" aria-labelledby="sobre-fb06-titulo">
         <div className="cg-about-inner">
           <div className="cg-about-header">
-            <span className="cg-about-badge">Engineering Portfolio 2024 · Factum Scuderia</span>
+            <span className="cg-about-badge">Engenharia & Alta Performance · Factum Scuderia</span>
             <h2 id="sobre-fb06-titulo" className="cg-about-title">Sobre o FB06</h2>
             <div className="cg-about-line" />
-          </div>
-
-          <div className="cg-about-lead-card">
-            <div className="cg-about-lead-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-              </svg>
-            </div>
-            <p className="cg-about-lead">
-              O FB06 foi desenvolvido pela equipe de engenharia da Factum Scuderia com três objetivos centrais: o melhor tempo de pista possível, conformidade total com o regulamento da categoria (sem penalidades) e durabilidade para resistir a múltiplas corridas com o mínimo de reparo. Cada peça do carro passou por ciclos de modelagem em CAD (Autodesk Fusion 360), simulações de CFD (dinâmica de fluidos computacional) e testes de estresse estrutural antes da fabricação, que combina usinagem CNC (para o chassi) e impressão 3D (para as demais peças).
+            <p className="cg-about-subtitle">
+              Concebido para maximizar a velocidade final e o tempo de reação, combinando aerodinâmica avançada, manufatura aditiva e conformidade regulamentar estrita.
             </p>
           </div>
 
+          {/* Destaques em Números / Métricas (estilo Hero Stats & Data Cards da Home) */}
+          <div className="cg-stats-row">
+            <div className="cg-stat-card">
+              <span className="cg-stat-num">-0,64g</span>
+              <span className="cg-stat-label">Alívio de Massa</span>
+              <p className="cg-stat-desc">4ª evolução do chassi drop shape</p>
+            </div>
+            <div className="cg-stat-card">
+              <span className="cg-stat-num">NACA 0006</span>
+              <span className="cg-stat-label">Perfil Aerodinâmico</span>
+              <p className="cg-stat-desc">Downforce com arrasto induzido mínimo</p>
+            </div>
+            <div className="cg-stat-card">
+              <span className="cg-stat-num">100% Cerâmica</span>
+              <span className="cg-stat-label">Rolamentos</span>
+              <p className="cg-stat-desc">Velocidade máxima na fase de inércia</p>
+            </div>
+            <div className="cg-stat-card">
+              <span className="cg-stat-num">4x Carga</span>
+              <span className="cg-stat-label">Fator de Segurança</span>
+              <p className="cg-stat-desc">Halo em Nylon testado sob sobrecarga</p>
+            </div>
+          </div>
+
+          {/* Bloco de Destaque / Lead Card com visual da Home */}
+          <div className="cg-about-lead-card">
+            <div className="cg-about-lead-icon">
+              <Wind size={26} />
+            </div>
+            <div className="cg-about-lead-content">
+              <h3 className="cg-about-lead-heading">Excelência em Cada Milímetro</h3>
+              <p className="cg-about-lead">
+                O FB06 foi desenvolvido pela equipe de engenharia da Factum Scuderia com três objetivos centrais: o melhor tempo de pista possível, conformidade total com o regulamento da categoria (sem penalidades) e durabilidade para resistir a múltiplas corridas com o mínimo de reparo. Cada peça do carro passou por ciclos de modelagem em CAD (Autodesk Fusion 360), simulações de CFD (dinâmica de fluidos computacional) e testes de estresse estrutural antes da fabricação, que combina usinagem CNC (para o chassi) e impressão 3D (para as demais peças).
+              </p>
+              <div className="cg-about-lead-pills">
+                <span className="cg-pill">#AerodinâmicaCFD</span>
+                <span className="cg-pill">#UsinagemCNC</span>
+                <span className="cg-pill">#Impressão3D</span>
+                <span className="cg-pill">#EfeitoVenturi</span>
+                <span className="cg-pill">#STEMRacing</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Os Três Objetivos Centrais de Engenharia */}
           <div className="cg-pillars-section">
-            <h3 className="cg-section-subtitle">Os Três Objetivos Centrais de Engenharia</h3>
+            <div className="cg-section-header-wrap">
+              <span className="cg-section-tag">Pilares de Projeto</span>
+              <h3 className="cg-section-subtitle">Os Três Objetivos Centrais de Engenharia</h3>
+            </div>
             <div className="cg-pillars-grid">
               <div className="cg-pillar-card">
                 <div className="cg-pillar-num">01</div>
+                <div className="cg-pillar-icon-wrap"><Gauge size={22} /></div>
                 <h4>Melhor Tempo de Pista</h4>
                 <p>
                   Downforce e arrasto calibrados por perfil NACA 0006 e efeito Coandă, aliados a rolamentos cerâmicos de atrito mínimo para maximizar a inércia nos dois terços finais da pista.
@@ -205,6 +255,7 @@ function CarroPage() {
 
               <div className="cg-pillar-card">
                 <div className="cg-pillar-num">02</div>
+                <div className="cg-pillar-icon-wrap"><Shield size={22} /></div>
                 <h4>Conformidade Total</h4>
                 <p>
                   Rigor absoluto em todas as dimensões, caixas de exclusão regulamentares, pesos mínimos e proteção do cockpit virtual — garantindo pontuação máxima sem penalidades.
@@ -213,6 +264,7 @@ function CarroPage() {
 
               <div className="cg-pillar-card">
                 <div className="cg-pillar-num">03</div>
+                <div className="cg-pillar-icon-wrap"><Cpu size={22} /></div>
                 <h4>Durabilidade Estrutural</h4>
                 <p>
                   Resistência mecânica comprovada por testes de estresse com 4x a carga de segurança no Halo de Nylon e câmara de CO2 reforçada para múltiplos disparos e impactos de desaceleração.
@@ -221,8 +273,12 @@ function CarroPage() {
             </div>
           </div>
 
+          {/* Ciclo de Desenvolvimento & Manufatura (4 Etapas interativas) */}
           <div className="cg-pipeline-section">
-            <h3 className="cg-section-subtitle">Ciclo de Desenvolvimento & Manufatura</h3>
+            <div className="cg-section-header-wrap">
+              <span className="cg-section-tag">Metodologia de Manufatura</span>
+              <h3 className="cg-section-subtitle">Ciclo de Desenvolvimento & Manufatura</h3>
+            </div>
             <div className="cg-pipeline-grid">
               <div className="cg-pipeline-card">
                 <div className="cg-pipeline-badge">Etapa 01</div>
@@ -250,28 +306,21 @@ function CarroPage() {
             </div>
           </div>
 
-          <div className="cg-specs-section">
-            <h3 className="cg-section-subtitle">Métricas Técnicas em Destaque</h3>
-            <div className="cg-specs-banner">
-              <div className="cg-spec-card">
-                <span className="cg-spec-val">-0,64g</span>
-                <span className="cg-spec-title">Alívio de Massa</span>
-                <p>Redução de peso alcançada na 4ª evolução do chassi drop shape.</p>
+          {/* Bloco de Ações Interativas (CTAs estilo Home) */}
+          <div className="cg-interactive-cta-block">
+            <div className="cg-cta-block-inner">
+              <div className="cg-cta-text-wrap">
+                <span className="cg-cta-tag">Experiência Interativa</span>
+                <h3 className="cg-cta-title">Explore o Carro na Prática</h3>
+                <p className="cg-cta-desc">Inspecione cada detalhe técnico no modelo 3D da garagem ou teste o tempo de reação no circuito de arrancada oficial.</p>
               </div>
-              <div className="cg-spec-card">
-                <span className="cg-spec-val">NACA 0006</span>
-                <span className="cg-spec-title">Perfil Aerodinâmico</span>
-                <p>Excelente coeficiente de sustentação com mínimo arrasto induzido.</p>
-              </div>
-              <div className="cg-spec-card">
-                <span className="cg-spec-val">Cerâmica</span>
-                <span className="cg-spec-title">Rolamentos</span>
-                <p>1 rolamento cerâmico por roda garantindo velocidade na inércia.</p>
-              </div>
-              <div className="cg-spec-card">
-                <span className="cg-spec-val">4x Carga</span>
-                <span className="cg-spec-title">Fator de Segurança</span>
-                <p>Halo de Nylon testado a 400% da carga obrigatória de segurança.</p>
+              <div className="cg-cta-buttons">
+                <button onClick={switchToGarageAndTop} className="cg-btn-primary">
+                  <Wrench size={16} /> Explorar Peças 3D
+                </button>
+                <button onClick={switchToTrackAndTop} className="cg-btn-outline">
+                  <Zap size={16} /> Teste de Reação na Pista
+                </button>
               </div>
             </div>
           </div>

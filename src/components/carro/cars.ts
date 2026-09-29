@@ -60,11 +60,11 @@ export const CARRO_FB06: Carro = {
     { id: "asa-traseira", nome: "Asa Traseira", meshes: ["empty_21"], material: "Impressão 3D / Perfil NACA 0006 / Corte em U", cor: "#3f3f3f", funcao: TXT.asaT },
     { id: "eixos", nome: "Eixos Dianteiro e Traseiro", meshes: ["empty_6", "empty_8"], material: "Aço satinado / Rolamentos Cerâmicos", cor: "#9aa3ad", funcao: TXT.eixos },
     { id: "rodas", nome: "Rodas", meshes: ["empty_11", "empty_12", "empty_13", "empty_14", "empty_9", "empty_10", "empty_15", "empty_16", "empty_17", "empty_18", "empty_19", "empty_20"], material: "ABS de baixa densidade / Hubcaps integrados", cor: "#f6f6f3", funcao: TXT.rodas },
-    { id: "halo", nome: "Halo", meshes: ["empty_5"], material: "Nylon impresso 3D / Alta resistência estrutural", cor: "#404040", funcao: TXT.halo },
+    { id: "halo", nome: "Halo", meshes: ["empty_3"], material: "Nylon impresso 3D / Alta resistência estrutural", cor: "#404040", funcao: TXT.halo },
     { id: "co2", nome: "Estrutura de Suporte / Câmara do CO2", meshes: ["empty_7"], material: "Estrutura reforçada de retenção de propulsão", cor: "#a0a0a0", funcao: TXT.co2 },
     { id: "sidepods", nome: "Sidepods", meshes: ["empty_4"], material: "Carenagens laterais / Formato afunilado", cor: "#2a5cd6", funcao: TXT.sidepods },
     { id: "assoalho-difusor", nome: "Assoalho e Difusor", meshes: ["empty_23"], material: "Geometria Venturi / Difusor aerodinâmico traseiro", cor: "#183e8a", funcao: TXT.assoalho },
-    { id: "capacete", nome: "Capacete do Piloto", meshes: ["empty_3"], material: "ABS / Piloto virtual regulamentar", cor: "#e0ded0", funcao: TXT.capacete },
+    { id: "capacete", nome: "Capacete do Piloto", meshes: ["empty_5"], material: "ABS / Piloto virtual regulamentar", cor: "#e0ded0", funcao: TXT.capacete },
   ],
 };
 
