@@ -10,14 +10,23 @@ const TRACK_LEN = 45;
 
 function acabamentoDe(c: THREE.Color, meshName: string, matName: string): THREE.MeshPhysicalMaterial {
   const n = (matName + " " + meshName).toLowerCase();
-  const base = { envMapIntensity: 1.2, transparent: true };
-  if (/eixo|steel|aço|satin|roda|wheel|hubcap/.test(n))
-    return new THREE.MeshPhysicalMaterial({ ...base, color: "#ffffff", metalness: 0.85, roughness: 0.2 });
-  if (/blue|chassi|body|sidepod|difusor|assoalho/.test(n))
-    return new THREE.MeshPhysicalMaterial({ ...base, color: "#2a4fd4", metalness: 0.55, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.05 });
-  if (/black|halo|asa|wing/.test(n))
-    return new THREE.MeshPhysicalMaterial({ ...base, color: "#011039", metalness: 0.2, roughness: 0.35, clearcoat: 0.8, clearcoatRoughness: 0.1 });
-  return new THREE.MeshPhysicalMaterial({ ...base, color: "#ffffff", metalness: 0.1, roughness: 0.3, clearcoat: 0.6, clearcoatRoughness: 0.15 });
+  const hsl = { h: 0, s: 0, l: 0 };
+  c.getHSL(hsl);
+  const base = { envMapIntensity: 1.4, transparent: true };
+  // Aço satinado / eixos — metal prateado
+  if (/eixo|steel|aço|satin/.test(n) || (hsl.s < 0.12 && hsl.l > 0.28 && hsl.l < 0.52))
+    return new THREE.MeshPhysicalMaterial({ ...base, color: "#b4bcc6", metalness: 1, roughness: 0.2 });
+  // ABS branco / rodas / hubcap
+  if (/roda|wheel|hubcap|abs/.test(n) || (hsl.l > 0.82))
+    return new THREE.MeshPhysicalMaterial({ ...base, color: "#f0f0ed", metalness: 0, roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.15 });
+  // Pintura azul metálica escura do chassi / corpo
+  if (/blue|chassi|body|sidepod|difusor|assoalho/.test(n) || (hsl.s > 0.4 && hsl.h > 0.55 && hsl.h < 0.72))
+    return new THREE.MeshPhysicalMaterial({ ...base, color: "#0d2f7a", metalness: 0.6, roughness: 0.26, clearcoat: 1, clearcoatRoughness: 0.04 });
+  // Preto carbono / halo / asas
+  if (/black|halo|asa|wing|co2|suporte/.test(n) || hsl.l < 0.22)
+    return new THREE.MeshPhysicalMaterial({ ...base, color: "#0c0d12", metalness: 0.3, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.08 });
+  // Fallback: cor original do modelo
+  return new THREE.MeshPhysicalMaterial({ ...base, color: c.clone(), metalness: 0, roughness: 0.38, clearcoat: 0.5, clearcoatRoughness: 0.18 });
 }
 
 // Visual Track: Straight 2-lane STEM Racing track with start blocks, guide lines and finish gantry
@@ -215,8 +224,10 @@ export function TrackScene({ carState, launchTimestamp }: TrackSceneProps) {
 
     const holder = new THREE.Group();
     holder.add(wrap);
-    // Align front nose straight down +Z (forward along longitudinal track axis)
-    holder.rotation.y = -Math.PI / 2;
+    // cars.ts rotacao=[-PI/2,0,0] stands the model upright.
+    // After that the car's longitudinal axis is along +X.
+    // The track runs along +Z, so we need yaw = +PI/2 to point the nose into +Z.
+    holder.rotation.y = Math.PI / 2;
     return holder;
   }, [loaded]);
 

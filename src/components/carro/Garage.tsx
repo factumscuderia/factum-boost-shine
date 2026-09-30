@@ -11,14 +11,23 @@ const CAR_LEN = 4.2;
 
 function acabamentoDe(c: THREE.Color, meshName: string, matName: string): THREE.MeshPhysicalMaterial {
   const n = (matName + " " + meshName).toLowerCase();
-  const base = { envMapIntensity: 1.2, transparent: true };
-  if (/eixo|steel|aço|satin|roda|wheel|hubcap/.test(n))
-    return new THREE.MeshPhysicalMaterial({ ...base, color: "#ffffff", metalness: 0.8, roughness: 0.2 });
-  if (/blue|chassi|body|sidepod|difusor|assoalho/.test(n))
-    return new THREE.MeshPhysicalMaterial({ ...base, color: "#2a4fd4", metalness: 0.5, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.05 });
-  if (/black|halo|asa|wing/.test(n))
-    return new THREE.MeshPhysicalMaterial({ ...base, color: "#011039", metalness: 0.2, roughness: 0.35, clearcoat: 0.8, clearcoatRoughness: 0.1 });
-  return new THREE.MeshPhysicalMaterial({ ...base, color: "#ffffff", metalness: 0.1, roughness: 0.3, clearcoat: 0.6, clearcoatRoughness: 0.15 });
+  const hsl = { h: 0, s: 0, l: 0 };
+  c.getHSL(hsl);
+  const base = { envMapIntensity: 1.4, transparent: true };
+  // Aço satinado / eixos / rodas / hubcaps — metal prateado
+  if (/eixo|steel|aço|satin/.test(n) || (hsl.s < 0.12 && hsl.l > 0.28 && hsl.l < 0.52))
+    return new THREE.MeshPhysicalMaterial({ ...base, color: "#b4bcc6", metalness: 1, roughness: 0.2 });
+  // ABS branco / rodas / hubcap
+  if (/roda|wheel|hubcap|abs/.test(n) || (hsl.l > 0.82))
+    return new THREE.MeshPhysicalMaterial({ ...base, color: "#f0f0ed", metalness: 0, roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.15 });
+  // Pintura azul metálica escura (chassi, sidepods, assoalho, corpo)
+  if (/blue|chassi|body|sidepod|difusor|assoalho/.test(n) || (hsl.s > 0.4 && hsl.h > 0.55 && hsl.h < 0.72))
+    return new THREE.MeshPhysicalMaterial({ ...base, color: "#0d2f7a", metalness: 0.6, roughness: 0.26, clearcoat: 1, clearcoatRoughness: 0.04 });
+  // Preto carbono / halo / asas
+  if (/black|halo|asa|wing|co2|suporte/.test(n) || hsl.l < 0.22)
+    return new THREE.MeshPhysicalMaterial({ ...base, color: "#0c0d12", metalness: 0.3, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.08 });
+  // Fallback: usa cor original do modelo (preserva textura do arquivo GLB)
+  return new THREE.MeshPhysicalMaterial({ ...base, color: c.clone(), metalness: 0, roughness: 0.38, clearcoat: 0.5, clearcoatRoughness: 0.18 });
 }
 
 function useCarModel(carro: Carro) {
