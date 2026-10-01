@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <!-- UCL Banner -->
+  <g transform="translate(10, 8)">
+    <rect x="0" y="0" width="60" height="44" fill="#000000" rx="3"/>
+    <text x="30" y="32" font-family="'League Spartan', 'Montserrat', sans-serif" font-weight="900" font-size="28" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">UCL</text>
+  </g>
+  <!-- Subtext -->
+  <g transform="translate(78, 14)">
+    <text x="0" y="14" font-family="'Montserrat', sans-serif" font-weight="700" font-size="11" fill="#111827">University</text>
+    <text x="0" y="26" font-family="'Montserrat', sans-serif" font-weight="700" font-size="11" fill="#111827">College</text>
+    <text x="0" y="38" font-family="'Montserrat', sans-serif" font-weight="700" font-size="11" fill="#111827">London</text>
+  </g>
+</svg>

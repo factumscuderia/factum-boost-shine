@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 60" width="280" height="60">
+  <!-- FIA Emblem Box -->
+  <g transform="translate(10, 8)">
+    <rect x="0" y="0" width="44" height="44" rx="6" fill="#0E2140"/>
+    <!-- FIA letters representation -->
+    <text x="22" y="28" font-family="'League Spartan', 'Impact', sans-serif" font-weight="900" font-size="18" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">FIA</text>
+    <path d="M6 35 C18 31 26 31 38 35" stroke="#E10600" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  </g>
+  <!-- Text Stack -->
+  <g transform="translate(62, 10)">
+    <text x="0" y="16" font-family="'League Spartan', 'Montserrat', sans-serif" font-weight="900" font-size="19" letter-spacing="1" fill="#0E2140">WOMEN IN</text>
+    <text x="0" y="34" font-family="'League Spartan', 'Montserrat', sans-serif" font-weight="900" font-size="19" letter-spacing="1" fill="#E10600">MOTORSPORT</text>
+    <text x="0" y="44" font-family="'Montserrat', sans-serif" font-weight="600" font-size="7" letter-spacing="2" fill="#5A6478">COMMISSION</text>
+  </g>
+</svg>

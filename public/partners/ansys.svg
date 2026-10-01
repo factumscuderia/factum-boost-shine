@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" width="200" height="50">
+  <!-- Ansys Yellow Chevron / Angle -->
+  <path d="M12 40 L28 8 L40 8 L24 40 Z" fill="#FFB71B"/>
+  <path d="M26 40 L42 8 L48 8 L32 40 Z" fill="#000000"/>
+  <!-- Ansys Wordmark -->
+  <text x="54" y="34" font-family="'Montserrat', 'League Spartan', Arial, sans-serif" font-weight="900" font-size="28" letter-spacing="1" fill="#000000">Ansys</text>
+</svg>
