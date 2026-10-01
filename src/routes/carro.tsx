@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Suspense, useCallback, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useProgress } from "@react-three/drei";
-import { Zap, Wrench, ChevronDown, Gauge, Shield, Cpu, Wind } from "lucide-react";
 import { CARRO_FB06, type Peca } from "@/components/carro/cars";
 import { GarageScene } from "@/components/carro/Garage";
 import { TrackScene } from "@/components/carro/TrackScene";
