@@ -216,9 +216,6 @@ function CarroPage() {
 
           {/* Bloco de Destaque / Lead Card com visual da Home */}
           <div className="cg-about-lead-card">
-            <div className="cg-about-lead-icon">
-              <Wind size={26} />
-            </div>
             <div className="cg-about-lead-content">
               <h3 className="cg-about-lead-heading">Excelência em Cada Milímetro</h3>
               <p className="cg-about-lead">
@@ -243,7 +240,6 @@ function CarroPage() {
             <div className="cg-pillars-grid">
               <div className="cg-pillar-card">
                 <div className="cg-pillar-num">01</div>
-                <div className="cg-pillar-icon-wrap"><Gauge size={22} /></div>
                 <h4>Melhor Tempo de Pista</h4>
                 <p>
                   Downforce e arrasto calibrados por perfil NACA 0006 e efeito Coandă, aliados a rolamentos cerâmicos de atrito mínimo para maximizar a inércia nos dois terços finais da pista.
@@ -252,7 +248,6 @@ function CarroPage() {
 
               <div className="cg-pillar-card">
                 <div className="cg-pillar-num">02</div>
-                <div className="cg-pillar-icon-wrap"><Shield size={22} /></div>
                 <h4>Conformidade Total</h4>
                 <p>
                   Rigor absoluto em todas as dimensões, caixas de exclusão regulamentares, pesos mínimos e proteção do cockpit virtual — garantindo pontuação máxima sem penalidades.
@@ -261,7 +256,6 @@ function CarroPage() {
 
               <div className="cg-pillar-card">
                 <div className="cg-pillar-num">03</div>
-                <div className="cg-pillar-icon-wrap"><Cpu size={22} /></div>
                 <h4>Durabilidade Estrutural</h4>
                 <p>
                   Resistência mecânica comprovada por testes de estresse com 4x a carga de segurança no Halo de Nylon e câmara de CO2 reforçada para múltiplos disparos e impactos de desaceleração.
@@ -313,10 +307,10 @@ function CarroPage() {
               </div>
               <div className="cg-cta-buttons">
                 <button onClick={switchToGarageAndTop} className="cg-btn-primary">
-                  <Wrench size={16} /> Explorar Peças 3D
+                  Explorar Peças 3D
                 </button>
                 <button onClick={switchToTrackAndTop} className="cg-btn-outline">
-                  <Zap size={16} /> Teste de Reação na Pista
+                  Teste de Reação na Pista
                 </button>
               </div>
             </div>
