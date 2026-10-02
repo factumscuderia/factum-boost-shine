@@ -1189,7 +1189,7 @@
   .sd-n { font-family: 'League Spartan', sans-serif; font-weight: 800; color: var(--accent); font-size: 1rem; margin-bottom: 6px; }
   .sd-dark { border-left: 4px solid var(--accent); }
   .sd-num-4 { grid-template-columns: repeat(4,1fr) !important; }
-  .sponsor-item { background: var(--navy) !important; border-color: var(--navy) !important; }
+  .sponsor-item { background: var(--navy) !important; border-color: var(--navy) !important; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
   .sponsor-item img { opacity: 0.9 !important; filter: none !important; }
   @media (max-width: 900px) { .sd-hist, .sd-num-4 { grid-template-columns: 1fr 1fr !important; } .sd-cats, .sd-races { grid-template-columns: 1fr; } }
 </style>
