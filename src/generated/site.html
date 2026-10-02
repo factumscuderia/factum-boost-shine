@@ -1172,6 +1172,26 @@
     .fs-grid { grid-template-columns: repeat(3, 1fr); }
   }
   @media (prefers-reduced-motion: reduce) { .team-photo img { transform: none !important; } }
+
+  .group-hero { background: #ffffff; padding: 0; }
+  .group-hero-img { position: relative; max-width: 1400px; margin: 0 auto; }
+  .group-hero-img img { width: 100%; display: block; max-height: 760px; object-fit: cover; object-position: 50% 30%; }
+  .group-hero-img::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(to bottom, #ffffff 0%, rgba(255,255,255,0) 14%, rgba(255,255,255,0) 72%, #ffffff 100%),
+                linear-gradient(to right, #ffffff 0%, rgba(255,255,255,0) 10%, rgba(255,255,255,0) 90%, #ffffff 100%); }
+  .sd-lead { max-width: 760px; margin: 14px auto 0; font-size: 1.15rem; line-height: 1.7; color: var(--navy); }
+  .sd-hist { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+  .sd-hist div { background: var(--navy); color: rgba(255,255,255,0.85); border-radius: 14px; padding: 22px; text-align: center; font-size: 0.95rem; }
+  .sd-hist span { display: block; font-family: 'League Spartan', sans-serif; font-size: 2.4rem; font-weight: 800; color: #fff; }
+  .sd-gap { margin-top: 64px; }
+  .sd-cats { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+  .sd-races { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .sd-n { font-family: 'League Spartan', sans-serif; font-weight: 800; color: var(--accent); font-size: 1rem; margin-bottom: 6px; }
+  .sd-dark { border-left: 4px solid var(--accent); }
+  .sd-num-4 { grid-template-columns: repeat(4,1fr) !important; }
+  .sponsor-item { background: var(--navy) !important; border-color: var(--navy) !important; }
+  .sponsor-item img { opacity: 0.9 !important; filter: none !important; }
+  @media (max-width: 900px) { .sd-hist, .sd-num-4 { grid-template-columns: 1fr 1fr !important; } .sd-cats, .sd-races { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -1238,18 +1258,9 @@
   </div>
 </section>
 
-<!-- DESTAQUE -->
-<section class="spotlight">
-  <div class="spotlight-inner">
-    <div class="spotlight-photo on-scroll"><img src="/__l5e/assets-v1/0dad148d-cad7-47b5-a631-a99dc278d6a7/mila.jpg" alt="Mila, engenheira da Factum Scuderia"></div>
-    <div class="spotlight-text on-scroll" data-stagger="120">
-      <div class="section-tag">Destaque da equipe</div>
-      <h2 class="section-title">Mila</h2>
-      <p class="spotlight-role">Engenheira · Factum Scuderia</p>
-      <p class="section-body">Atua na fabricação, nos testes e na análise estrutural do carro, transformando ideias em peças reais que vão para a pista.</p>
-      <a href="#stem" class="btn-primary">Conheça o projeto</a>
-    </div>
-  </div>
+<!-- FOTO DA EQUIPE -->
+<section class="group-hero" aria-label="Equipe Factum Scuderia">
+  <div class="group-hero-img on-scroll"><img src="/__l5e/assets-v1/e2623d45-16dd-434d-bb6b-15f2b41a7ed4/equipe.webp" alt="Equipe Factum Scuderia"></div>
 </section>
 
 <!-- STEM RACING -->
@@ -1312,35 +1323,54 @@
 
   <div class="stem-details">
     <div class="stem-details-head">
-      <div class="section-tag">Como funciona a competição</div>
-      <h3 class="sponsors-title">Muito além da pista</h3>
+      <div class="section-tag">História do programa</div>
+      <h3 class="sponsors-title">De F1 in Schools a STEM Racing</h3>
+      <p class="sd-lead">O programa nasceu em 1999 como <strong>F1 in Schools</strong> e foi renomeado para <strong>STEM Racing</strong>. Hoje está presente em <strong>65 países</strong>, reúne estudantes de <strong>9 a 19 anos</strong> e conta com o apoio oficial da Fórmula 1.</p>
     </div>
-    <div class="stem-details-grid">
-      <div class="sd-card on-scroll" data-stagger="0">
-        <div class="sd-title">5 categorias de julgamento</div>
-        <ol class="sd-list">
-          <li>Especificação e vistoria técnica</li>
-          <li>Design e engenharia</li>
-          <li>Gestão de projetos</li>
-          <li>Empreendedorismo</li>
-          <li>Apresentação verbal</li>
-        </ol>
-      </div>
-      <div class="sd-card on-scroll" data-stagger="100">
-        <div class="sd-title">2 formatos de corrida</div>
-        <p><strong>Corridas de reação:</strong> o piloto dispara o carro assim que as luzes se apagam — o tempo de reação conta no resultado.</p>
-        <p><strong>Corridas eliminatórias (knock-out):</strong> confrontos diretos em que só o mais rápido avança.</p>
-        <p class="sd-note">É por isso que o site tem um teste de reação: para você sentir na pele a largada de uma corrida STEM Racing.</p>
-        <a href="/carro" class="btn-primary sd-btn">Fazer o teste de reação</a>
-      </div>
-      <div class="sd-card sd-numbers on-scroll" data-stagger="200">
-        <div class="sd-title">STEM Racing no Brasil</div>
-        <div class="sd-num-grid">
-          <div><span>2017</span>SESI parceiro do programa desde</div>
-          <div><span>800+</span>competidores em 2024/2025</div>
-          <div><span>93</span>equipes inscritas</div>
-          <div><span>7</span>seletivas regionais</div>
-        </div>
+    <div class="sd-hist">
+      <div><span>1999</span>Ano de criação</div>
+      <div><span>65</span>países participantes</div>
+      <div><span>9–19</span>anos de idade</div>
+      <div><span>F1</span>apoio oficial</div>
+    </div>
+
+    <div class="stem-details-head sd-gap">
+      <div class="section-tag">Julgamento</div>
+      <h3 class="sponsors-title">As 5 categorias avaliadas</h3>
+    </div>
+    <div class="sd-cats">
+      <div class="sd-card on-scroll" data-stagger="0"><div class="sd-n">01</div><div class="sd-title">Especificação e Vistoria Técnica</div><p>O carro e as peças opcionais são inspecionados ao vivo. Desenhos, renderizações, acabamento e montagem também são avaliados. A equipe começa com 100 pontos, reduzidos a cada violação, com chance de manutenção e de recurso.</p></div>
+      <div class="sd-card on-scroll" data-stagger="80"><div class="sd-n">02</div><div class="sd-title">Design e Engenharia</div><p>Os juízes avaliam um portfólio de até 11 páginas, o uso de CAD/CAM e a fabricação do carro, além de uma entrevista com foco em design e processos.</p></div>
+      <div class="sd-card on-scroll" data-stagger="160"><div class="sd-n">03</div><div class="sd-title">Gestão de Projetos</div><p>Portfólio de até 7 páginas cobrindo cronograma, orçamento, recursos, comunicação, gestão de risco e controle — toda a equipe participa da avaliação.</p></div>
+      <div class="sd-card on-scroll" data-stagger="240"><div class="sd-n">04</div><div class="sd-title">Empreendedorismo</div><p>Portfólio de até 12 páginas sobre marketing, patrocínio e retorno sobre investimento, mídias digitais e sustentabilidade. O estande da equipe também é avaliado em design, clareza e impacto.</p></div>
+      <div class="sd-card on-scroll" data-stagger="320"><div class="sd-n">05</div><div class="sd-title">Apresentação Verbal</div><p>10 minutos de apresentação oral avaliando envolvimento, clareza, estrutura e conteúdo, seguidos de perguntas dos juízes.</p></div>
+    </div>
+
+    <div class="stem-details-head sd-gap">
+      <div class="section-tag">Na pista</div>
+      <h3 class="sponsors-title">Os 2 formatos de corrida</h3>
+    </div>
+    <div class="sd-races">
+      <div class="sd-card on-scroll"><div class="sd-title">Corridas de Reação</div><p>Acontecem em 4 sessões de 2 corridas cada. A pontuação considera os tempos mais rápidos e as médias — e o tempo de reação do piloto na largada faz diferença.</p><p class="sd-note">É por isso que o site tem um teste de reação: para você sentir a largada de uma corrida STEM Racing.</p><a href="/carro" class="btn-primary sd-btn">Fazer o teste de reação</a></div>
+      <div class="sd-card on-scroll" data-stagger="100"><div class="sd-title">Corridas Eliminatórias (knock-out)</div><p>Confrontos diretos em que a própria equipe controla o sistema de largada. Só o carro mais rápido avança de fase, até a final.</p></div>
+    </div>
+
+    <div class="stem-details-head sd-gap">
+      <div class="section-tag">Ferramentas</div>
+      <h3 class="sponsors-title">Softwares usados pelas equipes</h3>
+    </div>
+    <div class="sd-races">
+      <div class="sd-card sd-dark on-scroll"><div class="sd-title">Autodesk · CAD/CAM</div><p>A Autodesk fornece acesso gratuito a ferramentas de CAD/CAM, como o Fusion 360, usadas para modelar e preparar a fabricação do carro.</p></div>
+      <div class="sd-card sd-dark on-scroll" data-stagger="100"><div class="sd-title">Ansys · CFD</div><p>A Ansys fornece acesso gratuito a softwares de CFD (simulação de escoamento de ar) para todas as equipes participantes.</p></div>
+    </div>
+
+    <div class="sd-card sd-numbers sd-gap on-scroll">
+      <div class="sd-title">STEM Racing no Brasil</div>
+      <div class="sd-num-grid sd-num-4">
+        <div><span>2017</span>SESI parceiro do programa desde</div>
+        <div><span>800+</span>competidores em 2024/2025</div>
+        <div><span>93</span>equipes inscritas</div>
+        <div><span>7</span>seletivas regionais</div>
       </div>
     </div>
   </div>
@@ -1351,26 +1381,14 @@
     <p class="sponsors-sub">Quem acredita no nosso projeto na competição STEM Racing</p>
     <div class="sponsors-carousel">
       <div class="sponsors-track">
-        <a class="sponsor-item" href="https://www.aramco.com" target="_blank" rel="noopener" style="transform: rotateY(0deg) translateZ(320px);"><img src="https://logo.clearbit.com/aramco.com" alt="Aramco" loading="lazy"></a>
-        <a class="sponsor-item" href="https://www.formula1.com" target="_blank" rel="noopener" style="transform: rotateY(60deg) translateZ(320px);"><img src="https://logo.clearbit.com/formula1.com" alt="Formula 1" loading="lazy"></a>
-        <a class="sponsor-item" href="https://www.autodesk.com" target="_blank" rel="noopener" style="transform: rotateY(120deg) translateZ(320px);"><img src="https://logo.clearbit.com/autodesk.com" alt="Autodesk" loading="lazy"></a>
-        <a class="sponsor-item" href="https://www.ansys.com" target="_blank" rel="noopener" style="transform: rotateY(180deg) translateZ(320px);"><img src="https://logo.clearbit.com/ansys.com" alt="Ansys" loading="lazy"></a>
-        <a class="sponsor-item" href="https://www.denford.co.uk" target="_blank" rel="noopener" style="transform: rotateY(240deg) translateZ(320px);"><img src="https://logo.clearbit.com/denford.co.uk" alt="Denford" loading="lazy"></a>
-        <a class="sponsor-item" href="https://www.sesi.org.br" target="_blank" rel="noopener" style="transform: rotateY(300deg) translateZ(320px);"><img src="https://logo.clearbit.com/sesi.org.br" alt="SESI" loading="lazy"></a>
+        <a class="sponsor-item" href="https://www.formula1.com" target="_blank" rel="noopener" style="transform: rotateY(0.00deg) translateZ(340px);"><img src="/__l5e/assets-v1/b4385c42-f4d4-4c91-8c30-0367fcd1ac7c/sponsor-f1.png" alt="Formula 1" loading="lazy"></a>
+        <a class="sponsor-item" href="https://www.autodesk.com" target="_blank" rel="noopener" style="transform: rotateY(51.43deg) translateZ(340px);"><img src="/__l5e/assets-v1/ebb3ce60-fdf5-4168-89b4-3e6a3d5c66f8/sponsor-autodesk.png" alt="Autodesk" loading="lazy"></a>
+        <a class="sponsor-item" href="https://www.ansys.com" target="_blank" rel="noopener" style="transform: rotateY(102.86deg) translateZ(340px);"><img src="/__l5e/assets-v1/776fcc39-717d-4d4b-97b8-243152deb73b/sponsor-ansys.png" alt="Ansys" loading="lazy"></a>
+        <a class="sponsor-item" href="https://www.denford.co.uk" target="_blank" rel="noopener" style="transform: rotateY(154.29deg) translateZ(340px);"><img src="/__l5e/assets-v1/c57a0912-b95c-4837-b9ea-ad0ffe46b597/sponsor-denford.png" alt="Denford" loading="lazy"></a>
+        <a class="sponsor-item" href="https://pmief.org" target="_blank" rel="noopener" style="transform: rotateY(205.71deg) translateZ(340px);"><img src="/__l5e/assets-v1/55f03418-ba55-497d-ba13-002240fc61bf/sponsor-pmi.png" alt="PMI Educational Foundation" loading="lazy"></a>
+        <a class="sponsor-item" href="https://www.fia.com/women-motorsport" target="_blank" rel="noopener" style="transform: rotateY(257.14deg) translateZ(340px);"><img src="/__l5e/assets-v1/188db83a-eba6-4e12-bab8-54d83c5d42dd/sponsor-wim.png" alt="FIA Women in Motorsport" loading="lazy"></a>
+        <a class="sponsor-item" href="https://www.ucl.ac.uk" target="_blank" rel="noopener" style="transform: rotateY(308.57deg) translateZ(340px);"><img src="/__l5e/assets-v1/e9231f2b-77aa-4a0a-9d84-7d6219de6d73/sponsor-ucl.png" alt="UCL" loading="lazy"></a>
       </div>
-    </div>
-  </div>
-  <div class="sponsors-wrap factum-sponsors">
-    <div class="section-tag">Apoie a Factum</div>
-    <h3 class="sponsors-title">Patrocinadores da Factum Scuderia</h3>
-    <p class="sponsors-sub">Empresas que impulsionam a nossa equipe</p>
-    <div class="fs-grid">
-      <div class="fs-slot on-scroll" data-stagger="0"><span>Logo do patrocinador</span></div>
-      <div class="fs-slot on-scroll" data-stagger="60"><span>Logo do patrocinador</span></div>
-      <div class="fs-slot on-scroll" data-stagger="120"><span>Logo do patrocinador</span></div>
-      <div class="fs-slot on-scroll" data-stagger="180"><span>Logo do patrocinador</span></div>
-      <div class="fs-slot on-scroll" data-stagger="240"><span>Logo do patrocinador</span></div>
-      <div class="fs-slot on-scroll" data-stagger="300"><span>Logo do patrocinador</span></div>
     </div>
   </div>
 </section>
@@ -1382,7 +1400,6 @@
       <div class="section-tag">Equipe</div>
       <h2 class="section-title">Quem está por trás da Factum</h2>
     </div>
-    <div class="team-group on-scroll"><img src="/__l5e/assets-v1/e2623d45-16dd-434d-bb6b-15f2b41a7ed4/equipe.webp" alt="Equipe Factum Scuderia" loading="lazy"></div>
     <div class="team-grid">
       <div class="team-card on-scroll" data-stagger="0">
         <div class="team-card-inner">
@@ -1511,7 +1528,7 @@
         </div>
       </div>
       <div style="display:flex;justify-content:center;margin-top:2.5rem;">
-        <a href="https://savvy-steps-spark.lovable.app/" target="_blank" rel="noopener" class="app-btn app-btn-hero">Acesse FinEdu</a>
+        <a href="https://finedu.space" target="_blank" rel="noopener" class="app-btn app-btn-hero">Acesse FinEdu</a>
       </div>
     </div>
   </div>
