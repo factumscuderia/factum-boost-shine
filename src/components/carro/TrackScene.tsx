@@ -1,7 +1,8 @@
 import { useMemo, useRef, useEffect } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useLoader } from "@react-three/fiber";
 import { ContactShadows, Environment, Lightformer, PerspectiveCamera } from "@react-three/drei";
 import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { CARRO_FB06 } from "./cars";
 
 const CAR_LEN = 4.0;
@@ -186,108 +187,49 @@ function CO2Smoke({ active }: { active: boolean }) {
   );
 }
 
-function createProceduralTrackCar(): THREE.Group {
-  const group = new THREE.Group();
-
-  const addMesh = (
-    geom: THREE.BufferGeometry,
-    mat: THREE.Material,
-    name: string,
-    pos: [number, number, number] = [0, 0, 0],
-    rot: [number, number, number] = [0, 0, 0],
-    scale: [number, number, number] = [1, 1, 1]
-  ) => {
-    const m = new THREE.Mesh(geom, mat);
-    m.name = name;
-    m.position.set(...pos);
-    m.rotation.set(...rot);
-    m.scale.set(...scale);
-    m.castShadow = true;
-    group.add(m);
-    return m;
-  };
-
-  // 1. Chassi & Sidepods (empty_4) - Drop shape blue metallic body
-  const bodyGeom = new THREE.ConeGeometry(0.55, 3.8, 32);
-  const bodyMat = new THREE.MeshPhysicalMaterial({
-    color: "#0d2f7a",
-    metalness: 0.65,
-    roughness: 0.25,
-    clearcoat: 1,
-    clearcoatRoughness: 0.05,
-  });
-  addMesh(bodyGeom, bodyMat, "empty_4", [0, 0.45, 0], [Math.PI / 2, 0, 0], [0.85, 1, 0.65]);
-
-  // Cockpit hood & nose bridge
-  const noseGeom = new THREE.CylinderGeometry(0.12, 0.45, 1.8, 24);
-  addMesh(noseGeom, bodyMat.clone(), "empty_4", [0, 0.42, 1.2], [Math.PI / 2, 0, 0], [0.9, 1, 0.6]);
-
-  // 2. Front Wing (empty_2, empty_22)
-  const fwMat = new THREE.MeshPhysicalMaterial({ color: "#1e1e1e", metalness: 0.3, roughness: 0.3, clearcoat: 0.8 });
-  const fwMainGeom = new THREE.BoxGeometry(2.1, 0.06, 0.45);
-  addMesh(fwMainGeom, fwMat, "empty_2", [0, 0.22, 1.85]);
-  const epGeom = new THREE.BoxGeometry(0.04, 0.35, 0.55);
-  addMesh(epGeom, fwMat.clone(), "empty_22", [-1.05, 0.28, 1.85]);
-  addMesh(epGeom, fwMat.clone(), "empty_22", [1.05, 0.28, 1.85]);
-
-  // 3. Rear Wing (empty_21)
-  const rwMat = new THREE.MeshPhysicalMaterial({ color: "#1e1e1e", metalness: 0.3, roughness: 0.3, clearcoat: 0.8 });
-  const rwMainGeom = new THREE.BoxGeometry(1.8, 0.06, 0.4);
-  addMesh(rwMainGeom, rwMat, "empty_21", [0, 0.95, -1.55]);
-  const rwEpGeom = new THREE.BoxGeometry(0.04, 0.6, 0.5);
-  addMesh(rwEpGeom, rwMat.clone(), "empty_21", [-0.9, 0.85, -1.55]);
-  addMesh(rwEpGeom, rwMat.clone(), "empty_21", [0.9, 0.85, -1.55]);
-
-  // 4. Eixos (empty_6, empty_8) - Satin steel
-  const axleMat = new THREE.MeshPhysicalMaterial({ color: "#b4bcc6", metalness: 1, roughness: 0.18 });
-  const axleGeom = new THREE.CylinderGeometry(0.035, 0.035, 2.0, 16);
-  addMesh(axleGeom, axleMat, "empty_6", [0, 0.26, 1.3], [0, 0, Math.PI / 2]);
-  addMesh(axleGeom, axleMat.clone(), "empty_8", [0, 0.26, -1.1], [0, 0, Math.PI / 2]);
-
-  // 5. Rodas com Hubcaps (empty_11, empty_12, empty_13, empty_14) - ABS White
-  const wheelMat = new THREE.MeshPhysicalMaterial({ color: "#f0f0ed", metalness: 0.05, roughness: 0.35, clearcoat: 0.5 });
-  const wheelGeom = new THREE.CylinderGeometry(0.28, 0.28, 0.25, 28);
-  addMesh(wheelGeom, wheelMat, "empty_11", [-1.02, 0.26, 1.3], [0, 0, Math.PI / 2]);
-  addMesh(wheelGeom, wheelMat.clone(), "empty_12", [1.02, 0.26, 1.3], [0, 0, Math.PI / 2]);
-  addMesh(wheelGeom, wheelMat.clone(), "empty_13", [-1.02, 0.26, -1.1], [0, 0, Math.PI / 2]);
-  addMesh(wheelGeom, wheelMat.clone(), "empty_14", [1.02, 0.26, -1.1], [0, 0, Math.PI / 2]);
-
-  // 6. Halo (empty_3) - Nylon Black
-  const haloMat = new THREE.MeshPhysicalMaterial({ color: "#111218", metalness: 0.4, roughness: 0.35, clearcoat: 0.9 });
-  const haloGeom = new THREE.TorusGeometry(0.26, 0.04, 16, 32, Math.PI);
-  addMesh(haloGeom, haloMat, "empty_3", [0, 0.65, 0.1], [Math.PI / 2 + 0.2, 0, 0]);
-
-  // 7. CO2 Chamber (empty_7) - Metallic silver canister
-  const co2Mat = new THREE.MeshPhysicalMaterial({ color: "#8a929e", metalness: 0.9, roughness: 0.25 });
-  const co2Geom = new THREE.CylinderGeometry(0.16, 0.16, 1.1, 24);
-  addMesh(co2Geom, co2Mat, "empty_7", [0, 0.48, -1.0], [Math.PI / 2, 0, 0]);
-
-  // 8. Assoalho & Difusor (empty_23)
-  const floorMat = new THREE.MeshPhysicalMaterial({ color: "#071b48", metalness: 0.5, roughness: 0.3 });
-  const floorGeom = new THREE.BoxGeometry(1.4, 0.04, 3.2);
-  addMesh(floorGeom, floorMat, "empty_23", [0, 0.12, 0.1]);
-
-  // 9. Capacete (empty_5)
-  const helmMat = new THREE.MeshPhysicalMaterial({ color: "#e8e6dc", metalness: 0.1, roughness: 0.3, clearcoat: 1 });
-  const helmGeom = new THREE.SphereGeometry(0.17, 24, 24);
-  addMesh(helmGeom, helmMat, "empty_5", [0, 0.62, 0.3]);
-
-  return group;
-}
-
 type TrackSceneProps = {
   carState: "ready" | "launched" | "false_start";
   launchTimestamp: number;
 };
 
 export function TrackScene({ carState, launchTimestamp }: TrackSceneProps) {
+  const loaded = useLoader(GLTFLoader, CARRO_FB06.arquivoModelo) as unknown as THREE.Object3D & { scene?: THREE.Object3D };
   const carGroup = useRef<THREE.Group>(null);
   const smokeLaunchTime = useRef(0);
   const animStartTime = useRef(0);
 
   const carModel = useMemo(() => {
-    return createProceduralTrackCar();
-  }, []);
+    const src = (loaded.scene ?? loaded) as THREE.Object3D;
+    const root = src.clone(true);
+    root.rotation.set(...CARRO_FB06.rotacao);
+    const wrap = new THREE.Group();
+    wrap.add(root);
+    root.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (!m.isMesh) return;
+      const mats = ([] as THREE.Material[]).concat(m.material);
+      const next = mats.map((mm) => acabamentoDe((mm as THREE.MeshStandardMaterial).color ?? new THREE.Color("#ffffff"), m.name, mm.name || ""));
+      m.material = Array.isArray(m.material) ? next : next[0];
+      m.castShadow = true;
+    });
+    wrap.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(wrap);
+    const size = box.getSize(new THREE.Vector3());
+    const s = CAR_LEN / Math.max(size.x, size.z);
+    wrap.scale.setScalar(s);
+    wrap.updateMatrixWorld(true);
+    const b2 = new THREE.Box3().setFromObject(wrap);
+    const c = b2.getCenter(new THREE.Vector3());
+    wrap.position.set(-c.x, -b2.min.y, -c.z);
+
+    const holder = new THREE.Group();
+    holder.add(wrap);
+    // cars.ts rotacao=[-PI/2,0,0] stands the model upright.
+    // After that the car's longitudinal axis is along +X.
+    // The track runs along +Z, so we need yaw = +PI/2 to point the nose into +Z.
+    holder.rotation.y = Math.PI / 2;
+    return holder;
+  }, [loaded]);
 
   useEffect(() => {
     if (carState === "launched") {

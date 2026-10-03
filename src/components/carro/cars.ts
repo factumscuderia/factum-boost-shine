@@ -1,3 +1,5 @@
+import fb06 from "@/assets/fb06.glb.asset.json";
+
 /** Tipo de acabamento usado para gerar o material realista da peça. */
 export type Acabamento = "pintura" | "preto" | "abs" | "aco";
 
@@ -49,7 +51,7 @@ export const CARRO_FB06: Carro = {
   id: "fb06",
   nome: "FB-06",
   subtitulo: "Carro Oficial Factum Scuderia",
-  arquivoModelo: "/assets/fb06.glb",
+  arquivoModelo: fb06.url,
   formato: "glb",
   rotacao: [-Math.PI / 2, 0, 0],
   pecas: [
