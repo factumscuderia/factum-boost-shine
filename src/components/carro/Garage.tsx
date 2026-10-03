@@ -1,67 +1,107 @@
 import { useMemo, useRef, useEffect, useState } from "react";
-import { useFrame, useLoader, type ThreeEvent } from "@react-three/fiber";
+import { useFrame, type ThreeEvent } from "@react-three/fiber";
 import { CameraControls, ContactShadows, Environment, Lightformer, MeshReflectorMaterial, useTexture } from "@react-three/drei";
 import * as THREE from "three";
-import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import logo from "@/assets/logo-factum.png.asset.json";
 import type { Carro, Peca } from "./cars";
 
-const CAR_LEN = 4.2;
+function createProceduralFB06(): { holder: THREE.Group; meshes: THREE.Mesh[] } {
+  const group = new THREE.Group();
+  const meshes: THREE.Mesh[] = [];
 
-function acabamentoDe(c: THREE.Color, meshName: string, matName: string): THREE.MeshPhysicalMaterial {
-  const n = (matName + " " + meshName).toLowerCase();
-  const hsl = { h: 0, s: 0, l: 0 };
-  c.getHSL(hsl);
-  const base = { envMapIntensity: 1.4, transparent: true };
-  // Aço satinado / eixos / rodas / hubcaps — metal prateado
-  if (/eixo|steel|aço|satin/.test(n) || (hsl.s < 0.12 && hsl.l > 0.28 && hsl.l < 0.52))
-    return new THREE.MeshPhysicalMaterial({ ...base, color: "#b4bcc6", metalness: 1, roughness: 0.2 });
-  // ABS branco / rodas / hubcap
-  if (/roda|wheel|hubcap|abs/.test(n) || (hsl.l > 0.82))
-    return new THREE.MeshPhysicalMaterial({ ...base, color: "#f0f0ed", metalness: 0, roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.15 });
-  // Pintura azul metálica escura (chassi, sidepods, assoalho, corpo)
-  if (/blue|chassi|body|sidepod|difusor|assoalho/.test(n) || (hsl.s > 0.4 && hsl.h > 0.55 && hsl.h < 0.72))
-    return new THREE.MeshPhysicalMaterial({ ...base, color: "#0d2f7a", metalness: 0.6, roughness: 0.26, clearcoat: 1, clearcoatRoughness: 0.04 });
-  // Preto carbono / halo / asas
-  if (/black|halo|asa|wing|co2|suporte/.test(n) || hsl.l < 0.22)
-    return new THREE.MeshPhysicalMaterial({ ...base, color: "#0c0d12", metalness: 0.3, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.08 });
-  // Fallback: usa cor original do modelo (preserva textura do arquivo GLB)
-  return new THREE.MeshPhysicalMaterial({ ...base, color: c.clone(), metalness: 0, roughness: 0.38, clearcoat: 0.5, clearcoatRoughness: 0.18 });
+  const addMesh = (
+    geom: THREE.BufferGeometry,
+    mat: THREE.Material,
+    name: string,
+    pos: [number, number, number] = [0, 0, 0],
+    rot: [number, number, number] = [0, 0, 0],
+    scale: [number, number, number] = [1, 1, 1]
+  ) => {
+    const m = new THREE.Mesh(geom, mat);
+    m.name = name;
+    m.position.set(...pos);
+    m.rotation.set(...rot);
+    m.scale.set(...scale);
+    m.castShadow = true;
+    m.receiveShadow = true;
+    group.add(m);
+    meshes.push(m);
+    return m;
+  };
+
+  // 1. Chassi & Sidepods (empty_4) - Drop shape blue metallic body
+  const bodyGeom = new THREE.ConeGeometry(0.55, 3.8, 32);
+  const bodyMat = new THREE.MeshPhysicalMaterial({
+    color: "#0d2f7a",
+    metalness: 0.65,
+    roughness: 0.25,
+    clearcoat: 1,
+    clearcoatRoughness: 0.05,
+  });
+  addMesh(bodyGeom, bodyMat, "empty_4", [0, 0.45, 0], [Math.PI / 2, 0, 0], [0.85, 1, 0.65]);
+
+  // Cockpit hood & nose bridge
+  const noseGeom = new THREE.CylinderGeometry(0.12, 0.45, 1.8, 24);
+  addMesh(noseGeom, bodyMat.clone(), "empty_4", [0, 0.42, 1.2], [Math.PI / 2, 0, 0], [0.9, 1, 0.6]);
+
+  // 2. Front Wing (empty_2, empty_22)
+  const fwMat = new THREE.MeshPhysicalMaterial({ color: "#1e1e1e", metalness: 0.3, roughness: 0.3, clearcoat: 0.8 });
+  const fwMainGeom = new THREE.BoxGeometry(2.1, 0.06, 0.45);
+  addMesh(fwMainGeom, fwMat, "empty_2", [0, 0.22, 1.85]);
+  const epGeom = new THREE.BoxGeometry(0.04, 0.35, 0.55);
+  addMesh(epGeom, fwMat.clone(), "empty_22", [-1.05, 0.28, 1.85]);
+  addMesh(epGeom, fwMat.clone(), "empty_22", [1.05, 0.28, 1.85]);
+
+  // 3. Rear Wing (empty_21)
+  const rwMat = new THREE.MeshPhysicalMaterial({ color: "#1e1e1e", metalness: 0.3, roughness: 0.3, clearcoat: 0.8 });
+  const rwMainGeom = new THREE.BoxGeometry(1.8, 0.06, 0.4);
+  addMesh(rwMainGeom, rwMat, "empty_21", [0, 0.95, -1.55]);
+  const rwEpGeom = new THREE.BoxGeometry(0.04, 0.6, 0.5);
+  addMesh(rwEpGeom, rwMat.clone(), "empty_21", [-0.9, 0.85, -1.55]);
+  addMesh(rwEpGeom, rwMat.clone(), "empty_21", [0.9, 0.85, -1.55]);
+
+  // 4. Eixos (empty_6, empty_8) - Satin steel
+  const axleMat = new THREE.MeshPhysicalMaterial({ color: "#b4bcc6", metalness: 1, roughness: 0.18 });
+  const axleGeom = new THREE.CylinderGeometry(0.035, 0.035, 2.0, 16);
+  addMesh(axleGeom, axleMat, "empty_6", [0, 0.26, 1.3], [0, 0, Math.PI / 2]);
+  addMesh(axleGeom, axleMat.clone(), "empty_8", [0, 0.26, -1.1], [0, 0, Math.PI / 2]);
+
+  // 5. Rodas com Hubcaps (empty_11, empty_12, empty_13, empty_14) - ABS White
+  const wheelMat = new THREE.MeshPhysicalMaterial({ color: "#f0f0ed", metalness: 0.05, roughness: 0.35, clearcoat: 0.5 });
+  const wheelGeom = new THREE.CylinderGeometry(0.28, 0.28, 0.25, 28);
+  addMesh(wheelGeom, wheelMat, "empty_11", [-1.02, 0.26, 1.3], [0, 0, Math.PI / 2]);
+  addMesh(wheelGeom, wheelMat.clone(), "empty_12", [1.02, 0.26, 1.3], [0, 0, Math.PI / 2]);
+  addMesh(wheelGeom, wheelMat.clone(), "empty_13", [-1.02, 0.26, -1.1], [0, 0, Math.PI / 2]);
+  addMesh(wheelGeom, wheelMat.clone(), "empty_14", [1.02, 0.26, -1.1], [0, 0, Math.PI / 2]);
+
+  // 6. Halo (empty_3) - Nylon Black
+  const haloMat = new THREE.MeshPhysicalMaterial({ color: "#111218", metalness: 0.4, roughness: 0.35, clearcoat: 0.9 });
+  const haloGeom = new THREE.TorusGeometry(0.26, 0.04, 16, 32, Math.PI);
+  addMesh(haloGeom, haloMat, "empty_3", [0, 0.65, 0.1], [Math.PI / 2 + 0.2, 0, 0]);
+
+  // 7. CO2 Chamber (empty_7) - Metallic silver canister
+  const co2Mat = new THREE.MeshPhysicalMaterial({ color: "#8a929e", metalness: 0.9, roughness: 0.25 });
+  const co2Geom = new THREE.CylinderGeometry(0.16, 0.16, 1.1, 24);
+  addMesh(co2Geom, co2Mat, "empty_7", [0, 0.48, -1.0], [Math.PI / 2, 0, 0]);
+
+  // 8. Assoalho & Difusor (empty_23)
+  const floorMat = new THREE.MeshPhysicalMaterial({ color: "#071b48", metalness: 0.5, roughness: 0.3 });
+  const floorGeom = new THREE.BoxGeometry(1.4, 0.04, 3.2);
+  addMesh(floorGeom, floorMat, "empty_23", [0, 0.12, 0.1]);
+
+  // 9. Capacete (empty_5)
+  const helmMat = new THREE.MeshPhysicalMaterial({ color: "#e8e6dc", metalness: 0.1, roughness: 0.3, clearcoat: 1 });
+  const helmGeom = new THREE.SphereGeometry(0.17, 24, 24);
+  addMesh(helmGeom, helmMat, "empty_5", [0, 0.62, 0.3]);
+
+  const holder = new THREE.Group();
+  holder.add(group);
+  return { holder, meshes };
 }
 
 function useCarModel(carro: Carro) {
-  const Loader = (carro.formato === "fbx" ? FBXLoader : GLTFLoader) as typeof GLTFLoader;
-  const loaded = useLoader(Loader, carro.arquivoModelo) as unknown as THREE.Object3D & { scene?: THREE.Object3D };
   return useMemo(() => {
-    const src = (loaded.scene ?? loaded) as THREE.Object3D;
-    const root = src.clone(true);
-    root.rotation.set(...carro.rotacao);
-    const wrap = new THREE.Group();
-    wrap.add(root);
-    const meshes: THREE.Mesh[] = [];
-    root.traverse((o) => {
-      const m = o as THREE.Mesh;
-      if (!m.isMesh) return;
-      const mats = ([] as THREE.Material[]).concat(m.material);
-      const next = mats.map((mm) => acabamentoDe((mm as THREE.MeshStandardMaterial).color ?? new THREE.Color("#ffffff"), m.name, mm.name || ""));
-      m.material = Array.isArray(m.material) ? next : next[0];
-      m.castShadow = true;
-      meshes.push(m);
-    });
-    wrap.updateMatrixWorld(true);
-    const box = new THREE.Box3().setFromObject(wrap);
-    const size = box.getSize(new THREE.Vector3());
-    const s = CAR_LEN / Math.max(size.x, size.z);
-    wrap.scale.setScalar(s);
-    wrap.updateMatrixWorld(true);
-    const b2 = new THREE.Box3().setFromObject(wrap);
-    const c = b2.getCenter(new THREE.Vector3());
-    wrap.position.set(-c.x, -b2.min.y, -c.z);
-    const holder = new THREE.Group();
-    holder.add(wrap);
-    return { holder, meshes };
-  }, [loaded, carro]);
+    return createProceduralFB06();
+  }, [carro]);
 }
 
 type Props = {
@@ -72,7 +112,14 @@ type Props = {
   onReady: () => void;
 };
 
-export function CarModel({ carro, selecionada, onSelect, onHover, onReady, controls }: Props & { controls: React.RefObject<CameraControls | null> }) {
+export function CarModel({
+  carro,
+  selecionada,
+  onSelect,
+  onHover,
+  onReady,
+  controls,
+}: Props & { controls: React.RefObject<CameraControls | null> }) {
   const { holder, meshes } = useCarModel(carro);
   const spin = useRef<THREE.Group>(null);
   const [hover, setHover] = useState<Peca | null>(null);
@@ -90,9 +137,11 @@ export function CarModel({ carro, selecionada, onSelect, onHover, onReady, contr
     return map;
   }, [carro, meshes]);
 
-  useEffect(() => { onReady(); }, [holder, onReady]);
+  useEffect(() => {
+    onReady();
+  }, [holder, onReady]);
 
-  // câmera: aproxima da peça selecionada ou volta à vista geral
+  // Câmera: aproxima da peça selecionada ou volta à vista geral
   useEffect(() => {
     const cc = controls.current;
     if (!cc) return;
@@ -123,11 +172,12 @@ export function CarModel({ carro, selecionada, onSelect, onHover, onReady, contr
       const isH = p && hover?.id === p.id;
       const isS = isSelectedMesh;
       for (const mat of ([] as THREE.MeshPhysicalMaterial[]).concat(m.material as THREE.MeshPhysicalMaterial)) {
-        const targetOp = dim ? 0.12 : 1;
+        const targetOp = dim ? 0.15 : 1;
         mat.opacity += (targetOp - mat.opacity) * (1 - Math.exp(-8 * d));
         mat.depthWrite = mat.opacity > 0.9;
         mat.emissive.set("#2a4fd4");
-        mat.emissiveIntensity = isH || isS ? 0.4 + Math.sin(t * 4) * 0.15 : p && !selecionada ? 0.03 + Math.sin(t * 1.6) * 0.03 : 0;
+        mat.emissiveIntensity =
+          isH || isS ? 0.45 + Math.sin(t * 4) * 0.2 : p && !selecionada ? 0.03 + Math.sin(t * 1.6) * 0.03 : 0;
       }
     }
   });
@@ -153,7 +203,11 @@ export function CarModel({ carro, selecionada, onSelect, onHover, onReady, contr
           onHover(p, e.nativeEvent.clientX, e.nativeEvent.clientY);
           document.body.style.cursor = p ? "pointer" : "grab";
         }}
-        onPointerOut={() => { setHover(null); onHover(null, 0, 0); document.body.style.cursor = ""; }}
+        onPointerOut={() => {
+          setHover(null);
+          onHover(null, 0, 0);
+          document.body.style.cursor = "";
+        }}
         onClick={(e: ThreeEvent<MouseEvent>) => {
           e.stopPropagation();
           if (e.delta > 6) return;
@@ -166,7 +220,7 @@ export function CarModel({ carro, selecionada, onSelect, onHover, onReady, contr
 }
 
 function LogoWall() {
-  const tex = useTexture(logo.url);
+  const tex = useTexture("/images/logo-factum.png");
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 8;
   return (
@@ -208,8 +262,16 @@ export function GarageScene(props: Props) {
     <>
       <color attach="background" args={["#011039"]} />
       <fog attach="fog" args={["#011039", 10, 26]} />
-      <ambientLight intensity={0.25} />
-      <spotLight position={[0, 7, 1]} angle={0.45} penumbra={0.8} intensity={120} castShadow shadow-mapSize={[1024, 1024]} color="#ffffff" />
+      <ambientLight intensity={0.35} />
+      <spotLight
+        position={[0, 7, 1]}
+        angle={0.45}
+        penumbra={0.8}
+        intensity={120}
+        castShadow
+        shadow-mapSize={[1024, 1024]}
+        color="#ffffff"
+      />
       <spotLight position={[-5, 4, 4]} angle={0.5} penumbra={1} intensity={45} color="#2a4fd4" />
       <spotLight position={[5, 3, -3]} angle={0.5} penumbra={1} intensity={40} color="#2a4fd4" />
 
@@ -223,7 +285,15 @@ export function GarageScene(props: Props) {
 
       <CarModel {...props} controls={controls} />
 
-      <ContactShadows position={[0, 0.005, 0]} opacity={0.85} scale={10} blur={2.2} far={2} resolution={typeof window !== "undefined" && window.innerWidth < 768 ? 256 : 512} color="#000000" />
+      <ContactShadows
+        position={[0, 0.005, 0]}
+        opacity={0.85}
+        scale={10}
+        blur={2.2}
+        far={2}
+        resolution={typeof window !== "undefined" && window.innerWidth < 768 ? 256 : 512}
+        color="#000000"
+      />
 
       <mesh rotation-x={-Math.PI / 2}>
         <planeGeometry args={[40, 40]} />
